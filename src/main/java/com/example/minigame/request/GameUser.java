@@ -2,11 +2,13 @@ package com.example.minigame.request;
 
 import java.util.ArrayList;
 
-public class gUser {
+public class GameUser {
 
 
+    int token = 12;
+    int roundNum = 1;
     int thisRoundScore = 0;
-
+    int totalScore = 0;
     String status = "EQUAL";
 
     ArrayList<Integer> banList = new ArrayList<>();
@@ -18,12 +20,36 @@ public class gUser {
     int betLev5 = 0;
     int betLev6 = 0;
 
+    public int getToken() {
+        return token;
+    }
+
+    public void setToken(int token) {
+        this.token = token;
+    }
+
+    public int getRoundNum() {
+        return roundNum;
+    }
+
+    public void setRoundNum(int roundNum) {
+        this.roundNum = roundNum;
+    }
+
     public int getThisRoundScore() {
         return thisRoundScore;
     }
 
     public void setThisRoundScore(int thisRoundScore) {
         this.thisRoundScore = thisRoundScore;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
     public String getStatus() {
