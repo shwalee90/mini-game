@@ -8,3 +8,4 @@ export * from "./CardDroppable";
 export * from "./ListDroppable";
 export * from "./CardDraggable";
 export * from "./Link";
+export * from "./TimerBar";
