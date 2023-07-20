@@ -4,6 +4,7 @@ import { post } from "../server";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { Row, Col } from "antd";
 import TimerBar from "../components/TimerBar";
+import Table from "../components/Table";
 
 type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit",
@@ -40,11 +41,31 @@ export default function Tutorial() {
 
   const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
 
-  var totalToken = 0;
+  const banColumn = [
+    {
+      accessor: "Score1",
+      Header: "Score1",
+      Cell: ({ cell: token }) => <></>,
+    },
+    { accessor: "Score2", Header: "Score2" },
+    { accessor: "Score3", Header: "Score3" },
+  ];
+  const banData = [{ Score1: banScore1, Score2: banScore2, Score3: banScore3 }];
 
-  useEffect(() => {
-    totalToken = token;
-  }, []);
+  var totalToken = initialInfoState.token;
+
+  const calRemain = (num: string, sum: number, key: string) => {
+    var remainToken = 0;
+
+    if (token < Number(num)) {
+      num = token.toString() + Number(key);
+      remainToken = 0;
+    } else {
+      remainToken = Number(totalToken) - sum;
+    }
+
+    return remainToken;
+  };
 
   const calLimit = (key: string, num: string) => {
     var sumSubmit = 0;
@@ -80,12 +101,7 @@ export default function Tutorial() {
 
     console.log("sum", sumSubmit);
 
-    if (token < Number(num)) {
-      num = token.toString();
-      remainToken = 0;
-    } else {
-      remainToken = Number(totalToken) - sumSubmit;
-    }
+    remainToken = calRemain(num, sumSubmit, key);
 
     console.log("rem", remainToken);
 
@@ -144,6 +160,10 @@ export default function Tutorial() {
           <p> 점수 : {JSON.stringify("")}</p>
           <p> 총 토큰 : {totalToken}</p>
           <p> 남은 토큰 : {token}</p>
+          <p> 사용 가능한 0 </p>
+          <Row>
+            <Table columns={banColumn} data={banData}></Table>
+          </Row>
         </Col>
         <Col span={12}>
           <p> 점수 : {JSON.stringify("")}</p>
