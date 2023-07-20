@@ -5,6 +5,8 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { Row, Col } from "antd";
 import TimerBar from "../components/TimerBar";
 import Table from "../components/Table";
+import  "../css/tableStyles.css";
+
 
 type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit",
@@ -24,19 +26,25 @@ const initialInfoState = {
   score: 0,
 };
 
-type BanListType = Record<"banScore1" | "banScore2" | "banScore3", boolean>;
+type BanListType =  {
+  banScore1: boolean,
+  banScore2: boolean,
+  banScore3: boolean,
+  zeroCnt : number
+};
 
 const initialBanList = {
   banScore1: false,
   banScore2: false,
   banScore3: false,
+  zeroCnt : 0
 };
 
 export default function Tutorial() {
   const [{ score1Submit, score2Submit, score3Submit }, setForm] =
     useState<SubmitType>(initialFormState);
 
-  const [{ banScore1, banScore2, banScore3 }, setBanList] =
+  const [{ banScore1, banScore2, banScore3 ,zeroCnt }, setBanList] =
     useState<BanListType>(initialBanList);
 
   const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
@@ -45,7 +53,6 @@ export default function Tutorial() {
     {
       accessor: "Score1",
       Header: "Score1",
-      Cell: ({ cell: token }) => <></>,
     },
     { accessor: "Score2", Header: "Score2" },
     { accessor: "Score3", Header: "Score3" },
@@ -53,12 +60,10 @@ export default function Tutorial() {
   const banData = [{ Score1: banScore1, Score2: banScore2, Score3: banScore3 }];
 
   var totalToken = initialInfoState.token;
-
-  const calRemain = (num: string, sum: number, key: string) => {
+  const calRemain = (num: string, sum: number, key: string , beforeVal: string) => {
     var remainToken = 0;
-
     if (token < Number(num)) {
-      num = token.toString() + Number(key);
+      num = token.toString() + Number(beforeVal);
       remainToken = 0;
     } else {
       remainToken = Number(totalToken) - sum;
@@ -67,11 +72,11 @@ export default function Tutorial() {
     return remainToken;
   };
 
-  const calLimit = (key: string, num: string) => {
+  const calLimit = (key: string, num: string , beforeVal: string) => {
     var sumSubmit = 0;
     var remainToken = 0;
     console.log("num", num);
-    if (key == "score1Submit") {
+    if (key === "score1Submit") {
       sumSubmit = Number(num) + Number(score2Submit) + Number(score3Submit);
       if (sumSubmit > totalToken) {
         num = (
@@ -80,7 +85,7 @@ export default function Tutorial() {
         ).toString();
       }
     }
-    if (key == "score2Submit") {
+    if (key === "score2Submit") {
       sumSubmit = Number(num) + Number(score1Submit) + Number(score3Submit);
       if (sumSubmit > totalToken) {
         num = (
@@ -89,7 +94,7 @@ export default function Tutorial() {
         ).toString();
       }
     }
-    if (key == "score3Submit") {
+    if (key === "score3Submit") {
       sumSubmit = Number(num) + Number(score1Submit) + Number(score2Submit);
       if (sumSubmit > totalToken) {
         num = (
@@ -100,10 +105,20 @@ export default function Tutorial() {
     }
 
     console.log("sum", sumSubmit);
-
-    remainToken = calRemain(num, sumSubmit, key);
-
+    remainToken = calRemain(num, sumSubmit, key , beforeVal);
     console.log("rem", remainToken);
+ 
+    if (zeroCnt === 2 && Number(num) === 0){
+      return;
+    }
+    
+    if ( Number(beforeVal) === 0 && Number(num) !== 0 ){
+      setBanList((obj) => ({ ...obj, zeroCnt: zeroCnt-1 }));
+    }
+
+    if (Number(num) === 0){
+      setBanList((obj) => ({ ...obj, zeroCnt: zeroCnt+1 }));
+    }
 
     setForm((obj) => ({ ...obj, [key]: num }));
     setInfo((obj) => ({ ...obj, token: remainToken }));
@@ -112,44 +127,24 @@ export default function Tutorial() {
   const changed = useCallback(
     (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
+      var beforeVal = ''
+      if(key == "score1Submit"){
+        beforeVal = score1Submit
+      }
+      if(key == "score2Submit"){
+        beforeVal = score2Submit
+      }
+      if(key == "score3Submit"){
+        beforeVal = score3Submit
+      }
 
       var inputNum = value.replace(/[^0-9]/g, "");
-      calLimit(key, inputNum);
+      calLimit(key, inputNum ,beforeVal);
     },
     [score1Submit, score2Submit, score3Submit]
   );
 
-  //   useEffect(() => {
-  //     console.log("Effect");
-  //     calLimit(inputName, inputNum);
-  //   }, []);
-
-  //   useEffect(() => {
-  //     // 설정된 시간 간격마다 setInterval 콜백이 실행된다.
-  //     const id = setInterval(() => {
-  //       // 타이머 숫자가 하나씩 줄어들도록
-  //       setCount((count) => count - 1);
-  //     }, 1000);
-
-  //     // 0이 되면 카운트가 멈춤
-  //     if (count === 0) {
-  //       clearInterval(id);
-
-  //       postTest();
-  //     }
-  //     return () => clearInterval(id);
-  //     // 카운트 변수가 바뀔때마다 useEffecct 실행
-  //   }, [count]);
-
-  //   const [data, setData] = useState<object>({});
-  //   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  //   const postTest = useCallback(() => {
-  //     post("/betting", data)
-  //       .then((res) => res.json())
-  //       .then((data) => setData(data))
-  //       .catch((error) => setErrorMessage(error.message));
-  //   }, []);
-
+ 
   return (
     <section className="w-full mt-4">
       <div>
@@ -160,10 +155,7 @@ export default function Tutorial() {
           <p> 점수 : {JSON.stringify("")}</p>
           <p> 총 토큰 : {totalToken}</p>
           <p> 남은 토큰 : {token}</p>
-          <p> 사용 가능한 0 </p>
-          <Row>
-            <Table columns={banColumn} data={banData}></Table>
-          </Row>
+          <p> 0 사용 횟수 : {zeroCnt} / 2</p>
         </Col>
         <Col span={12}>
           <p> 점수 : {JSON.stringify("")}</p>
