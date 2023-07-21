@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 export default function Timer() {
   // 시간을 담을 변수
-  const [count, setCount] = useState(30);
+  const [count, setCount] = useState(10);
 
   useEffect(() => {
     // 설정된 시간 간격마다 setInterval 콜백이 실행된다.

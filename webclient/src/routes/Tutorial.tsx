@@ -5,8 +5,8 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { Row, Col } from "antd";
 import TimerBar from "../components/TimerBar";
 import Table from "../components/Table";
-import  "../css/tableStyles.css";
-
+import "../css/tableStyles.css";
+import { Button, Icon } from "../theme/daisyui";
 
 type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit",
@@ -26,25 +26,25 @@ const initialInfoState = {
   score: 0,
 };
 
-type BanListType =  {
-  banScore1: boolean,
-  banScore2: boolean,
-  banScore3: boolean,
-  zeroCnt : number
+type BanListType = {
+  banScore1: boolean;
+  banScore2: boolean;
+  banScore3: boolean;
+  zeroCnt: number;
 };
 
 const initialBanList = {
   banScore1: false,
   banScore2: false,
   banScore3: false,
-  zeroCnt : 0
+  zeroCnt: 0,
 };
 
 export default function Tutorial() {
   const [{ score1Submit, score2Submit, score3Submit }, setForm] =
     useState<SubmitType>(initialFormState);
 
-  const [{ banScore1, banScore2, banScore3 ,zeroCnt }, setBanList] =
+  const [{ banScore1, banScore2, banScore3, zeroCnt }, setBanList] =
     useState<BanListType>(initialBanList);
 
   const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
@@ -60,7 +60,12 @@ export default function Tutorial() {
   const banData = [{ Score1: banScore1, Score2: banScore2, Score3: banScore3 }];
 
   var totalToken = initialInfoState.token;
-  const calRemain = (num: string, sum: number, key: string , beforeVal: string) => {
+  const calRemain = (
+    num: string,
+    sum: number,
+    key: string,
+    beforeVal: string
+  ) => {
     var remainToken = 0;
     if (token < Number(num)) {
       num = token.toString() + Number(beforeVal);
@@ -72,7 +77,7 @@ export default function Tutorial() {
     return remainToken;
   };
 
-  const calLimit = (key: string, num: string , beforeVal: string) => {
+  const calLimit = (key: string, num: string, beforeVal: string) => {
     var sumSubmit = 0;
     var remainToken = 0;
     console.log("num", num);
@@ -105,19 +110,59 @@ export default function Tutorial() {
     }
 
     console.log("sum", sumSubmit);
-    remainToken = calRemain(num, sumSubmit, key , beforeVal);
+    remainToken = calRemain(num, sumSubmit, key, beforeVal);
     console.log("rem", remainToken);
- 
-    if (zeroCnt === 2 && Number(num) === 0){
+
+    if (zeroCnt === 2 && Number(num) === 0) {
       return;
     }
-    
-    if ( Number(beforeVal) === 0 && Number(num) !== 0 ){
-      setBanList((obj) => ({ ...obj, zeroCnt: zeroCnt-1 }));
+
+    if (Number(beforeVal) === 0 && Number(num) !== 0) {
+      if (key == "score1Submit") {
+        setBanList((obj) => ({
+          ...obj,
+          zeroCnt: zeroCnt - 1,
+          banScore1: false,
+        }));
+      }
+      if (key == "score2Submit") {
+        setBanList((obj) => ({
+          ...obj,
+          zeroCnt: zeroCnt - 1,
+          banScore2: false,
+        }));
+      }
+      if (key == "score3Submit") {
+        setBanList((obj) => ({
+          ...obj,
+          zeroCnt: zeroCnt - 1,
+          banScore3: false,
+        }));
+      }
     }
 
-    if (Number(num) === 0){
-      setBanList((obj) => ({ ...obj, zeroCnt: zeroCnt+1 }));
+    if (Number(num) === 0) {
+      if (key == "score1Submit") {
+        setBanList((obj) => ({
+          ...obj,
+          zeroCnt: zeroCnt + 1,
+          banScore1: true,
+        }));
+      }
+      if (key == "score2Submit") {
+        setBanList((obj) => ({
+          ...obj,
+          zeroCnt: zeroCnt + 1,
+          banScore2: true,
+        }));
+      }
+      if (key == "score3Submit") {
+        setBanList((obj) => ({
+          ...obj,
+          zeroCnt: zeroCnt + 1,
+          banScore3: true,
+        }));
+      }
     }
 
     setForm((obj) => ({ ...obj, [key]: num }));
@@ -127,24 +172,23 @@ export default function Tutorial() {
   const changed = useCallback(
     (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
-      var beforeVal = ''
-      if(key == "score1Submit"){
-        beforeVal = score1Submit
+      var beforeVal = "";
+      if (key == "score1Submit") {
+        beforeVal = score1Submit;
       }
-      if(key == "score2Submit"){
-        beforeVal = score2Submit
+      if (key == "score2Submit") {
+        beforeVal = score2Submit;
       }
-      if(key == "score3Submit"){
-        beforeVal = score3Submit
+      if (key == "score3Submit") {
+        beforeVal = score3Submit;
       }
 
       var inputNum = value.replace(/[^0-9]/g, "");
-      calLimit(key, inputNum ,beforeVal);
+      calLimit(key, inputNum, beforeVal);
     },
     [score1Submit, score2Submit, score3Submit]
   );
 
- 
   return (
     <section className="w-full mt-4">
       <div>
@@ -156,6 +200,30 @@ export default function Tutorial() {
           <p> 총 토큰 : {totalToken}</p>
           <p> 남은 토큰 : {token}</p>
           <p> 0 사용 횟수 : {zeroCnt} / 2</p>
+          <Row>
+            <p>SCORE1 :</p>{" "}
+            {banScore1 === false && zeroCnt !== 2 ? (
+              <Button className="btn btn-success"> 사용 가능</Button>
+            ) : (
+              <Button className="btn btn-error"> 사용 불가능</Button>
+            )}
+          </Row>
+          <Row>
+            <p>SCORE2 : </p>{" "}
+            {banScore2 === false && zeroCnt !== 2 ? (
+              <Button className="btn btn-success"> 사용 가능</Button>
+            ) : (
+              <Button className="btn btn-error"> 사용 불가능</Button>
+            )}
+          </Row>
+          <Row>
+            <p>SCORE3 : </p>{" "}
+            {banScore3 === false && zeroCnt !== 2 ? (
+              <Button className="btn btn-success"> 사용 가능</Button>
+            ) : (
+              <Button className="btn btn-error"> 사용 불가능</Button>
+            )}
+          </Row>
         </Col>
         <Col span={12}>
           <p> 점수 : {JSON.stringify("")}</p>
