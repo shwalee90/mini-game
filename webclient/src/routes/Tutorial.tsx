@@ -13,11 +13,25 @@ type SubmitType = Record<
   string
 >;
 
+
 const initialFormState = {
   score1Submit: "1",
   score2Submit: "1",
   score3Submit: "1",
 };
+
+type errMsgType = Record<
+  "score1ErrMsg" | "score2ErrMsg" | "score3ErrMsg",
+  string[]
+>;
+
+const initialErrMsg = {
+  score1ErrMsg : [] ,
+  score2ErrMsg : [] ,
+  score3ErrMsg : [] ,
+}
+
+
 
 type UserInfoType = Record<"token" | "score", number>;
 
@@ -44,46 +58,63 @@ export default function Tutorial() {
   const [{ score1Submit, score2Submit, score3Submit }, setForm] =
     useState<SubmitType>(initialFormState);
 
+  const [{ score1ErrMsg, score2ErrMsg, score3ErrMsg }, setErrmsg] =
+    useState<errMsgType>(initialErrMsg);
+
   const [{ banScore1, banScore2, banScore3, zeroCnt }, setBanList] =
     useState<BanListType>(initialBanList);
 
   const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
 
-  const banColumn = [
-    {
-      accessor: "Score1",
-      Header: "Score1",
-    },
-    { accessor: "Score2", Header: "Score2" },
-    { accessor: "Score3", Header: "Score3" },
-  ];
-  const banData = [{ Score1: banScore1, Score2: banScore2, Score3: banScore3 }];
+
+  useEffect(() => {
+
+    setInfo((obj) => ({ ...obj, token: token-3 }));
+
+  } ,[])
 
   var totalToken = initialInfoState.token;
   const calRemain = (
     num: string,
     sum: number,
-    key: string,
-    beforeVal: string
+    beforeVal: string ,
+    errMsgList : string[]
   ) => {
+    let tokenAndErrMsg = new Map();
     var remainToken = 0;
-    if (token < Number(num)) {
-      num = token.toString() + Number(beforeVal);
+
+    var diffNum = Number(num) - Number(beforeVal);
+    console.log(diffNum)
+    if (token < diffNum && diffNum > 0) {
+      errMsgList.push('입력값이 남은 token보다 큽니다.')
       remainToken = 0;
-    } else {
-      remainToken = Number(totalToken) - sum;
+    }
+    
+    else if (token > diffNum && diffNum > 0) {
+      remainToken = token - diffNum;
     }
 
-    return remainToken;
+    else  {
+      remainToken = token - diffNum;
+    }
+    
+    tokenAndErrMsg.set('remainToken' , remainToken);
+    tokenAndErrMsg.set('errMsgList' , errMsgList )
+
+
+    return tokenAndErrMsg;
   };
 
   const calLimit = (key: string, num: string, beforeVal: string) => {
     var sumSubmit = 0;
     var remainToken = 0;
-    console.log("num", num);
+    var errMsgState = ''
+    var errMsgList:string[] = [];
     if (key === "score1Submit") {
+      errMsgState = "score1ErrMsg"
       sumSubmit = Number(num) + Number(score2Submit) + Number(score3Submit);
       if (sumSubmit > totalToken) {
+        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
         num = (
           totalToken -
           (Number(score2Submit) + Number(score3Submit))
@@ -91,8 +122,10 @@ export default function Tutorial() {
       }
     }
     if (key === "score2Submit") {
+      errMsgState = "score2ErrMsg"
       sumSubmit = Number(num) + Number(score1Submit) + Number(score3Submit);
       if (sumSubmit > totalToken) {
+        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
         num = (
           totalToken -
           (Number(score1Submit) + Number(score3Submit))
@@ -100,8 +133,10 @@ export default function Tutorial() {
       }
     }
     if (key === "score3Submit") {
+      errMsgState = "score2ErrMsg"
       sumSubmit = Number(num) + Number(score1Submit) + Number(score2Submit);
       if (sumSubmit > totalToken) {
+        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
         num = (
           totalToken -
           (Number(score1Submit) + Number(score2Submit))
@@ -109,30 +144,37 @@ export default function Tutorial() {
       }
     }
 
-    console.log("sum", sumSubmit);
-    remainToken = calRemain(num, sumSubmit, key, beforeVal);
-    console.log("rem", remainToken);
+    let tokenAndErrMsg  = calRemain(num, sumSubmit, beforeVal,errMsgList);
+
+    remainToken = tokenAndErrMsg.get('remainToken');
+    errMsgList = tokenAndErrMsg.get('errMsgList');
+
 
     if (zeroCnt === 2 && Number(num) === 0) {
+      errMsgList.push('0을 더 이상 사용할 수 없습니다.')
+      setErrmsg((obj) => ({
+        ...obj,
+        [errMsgState] : errMsgList
+      }));
       return;
     }
 
     if (Number(beforeVal) === 0 && Number(num) !== 0) {
-      if (key == "score1Submit") {
+      if (key === "score1Submit") {
         setBanList((obj) => ({
           ...obj,
           zeroCnt: zeroCnt - 1,
           banScore1: false,
         }));
       }
-      if (key == "score2Submit") {
+      if (key === "score2Submit") {
         setBanList((obj) => ({
           ...obj,
           zeroCnt: zeroCnt - 1,
           banScore2: false,
         }));
       }
-      if (key == "score3Submit") {
+      if (key === "score3Submit") {
         setBanList((obj) => ({
           ...obj,
           zeroCnt: zeroCnt - 1,
@@ -142,21 +184,21 @@ export default function Tutorial() {
     }
 
     if (Number(num) === 0) {
-      if (key == "score1Submit") {
+      if (key === "score1Submit") {
         setBanList((obj) => ({
           ...obj,
           zeroCnt: zeroCnt + 1,
           banScore1: true,
         }));
       }
-      if (key == "score2Submit") {
+      if (key === "score2Submit") {
         setBanList((obj) => ({
           ...obj,
           zeroCnt: zeroCnt + 1,
           banScore2: true,
         }));
       }
-      if (key == "score3Submit") {
+      if (key === "score3Submit") {
         setBanList((obj) => ({
           ...obj,
           zeroCnt: zeroCnt + 1,
@@ -165,6 +207,10 @@ export default function Tutorial() {
       }
     }
 
+    setErrmsg((obj) => ({
+      ...obj,
+      [errMsgState] : errMsgList
+    }));
     setForm((obj) => ({ ...obj, [key]: num }));
     setInfo((obj) => ({ ...obj, token: remainToken }));
   };
@@ -173,20 +219,20 @@ export default function Tutorial() {
     (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       var beforeVal = "";
-      if (key == "score1Submit") {
+      if (key === "score1Submit") {
         beforeVal = score1Submit;
       }
-      if (key == "score2Submit") {
+      if (key === "score2Submit") {
         beforeVal = score2Submit;
       }
-      if (key == "score3Submit") {
+      if (key === "score3Submit") {
         beforeVal = score3Submit;
       }
 
       var inputNum = value.replace(/[^0-9]/g, "");
       calLimit(key, inputNum, beforeVal);
     },
-    [score1Submit, score2Submit, score3Submit]
+    [score1Submit, score2Submit, score3Submit , token]
   );
 
   return (
@@ -237,7 +283,11 @@ export default function Tutorial() {
       <div>
         <Row>
           <Col span={12}>
+            <Row>
+            <Col span= {4}>
             <p>SCORE 1 :</p>
+            </Col>
+            <Col span= {4}>
             <input
               type="string"
               name="scoreOne"
@@ -245,8 +295,25 @@ export default function Tutorial() {
               value={score1Submit}
               onChange={changed("score1Submit")}
             />
+            </Col>
+            </Row>
+            <Row>
+            <Col span= {12}>
+              {  score1ErrMsg.length !== 0 ?
+                score1ErrMsg.map((errMsg ,index) =>(
+                  <p key={index}>
+                    {errMsg}
+                  </p>)
+                  )
+                  :
+                  <p></p>
+              }
+            </Col>
+            </Row>
           </Col>
-          <Col span={12}></Col>
+          <Col span={12}>
+          
+          </Col>
         </Row>
         <Row>
           <Col span={12}>
