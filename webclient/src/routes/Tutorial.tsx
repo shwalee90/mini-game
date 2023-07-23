@@ -9,7 +9,7 @@ import "../css/tableStyles.css";
 import { Button, Icon } from "../theme/daisyui";
 
 type SubmitType = Record<
-  "score1Submit" | "score2Submit" | "score3Submit",
+  "score1Submit" | "score2Submit" | "score3Submit" | "thisScore",
   string
 >;
 
@@ -18,17 +18,17 @@ const initialFormState = {
   score1Submit: "1",
   score2Submit: "1",
   score3Submit: "1",
+  thisScore : '',
 };
 
 type errMsgType = Record<
-  "score1ErrMsg" | "score2ErrMsg" | "score3ErrMsg",
+  "ErrMsg",
   string[]
 >;
 
 const initialErrMsg = {
-  score1ErrMsg : [] ,
-  score2ErrMsg : [] ,
-  score3ErrMsg : [] ,
+  ErrMsg : [] ,
+
 }
 
 
@@ -55,17 +55,16 @@ const initialBanList = {
 };
 
 export default function Tutorial() {
-  const [{ score1Submit, score2Submit, score3Submit }, setForm] =
+  const [{ score1Submit, score2Submit, score3Submit ,thisScore }, setForm] =
     useState<SubmitType>(initialFormState);
 
-  const [{ score1ErrMsg, score2ErrMsg, score3ErrMsg }, setErrmsg] =
+  const [{ ErrMsg }, setErrmsg] =
     useState<errMsgType>(initialErrMsg);
 
   const [{ banScore1, banScore2, banScore3, zeroCnt }, setBanList] =
     useState<BanListType>(initialBanList);
 
   const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
-
 
   useEffect(() => {
 
@@ -84,7 +83,6 @@ export default function Tutorial() {
     var remainToken = 0;
 
     var diffNum = Number(num) - Number(beforeVal);
-    console.log(diffNum)
     if (token < diffNum && diffNum > 0) {
       errMsgList.push('입력값이 남은 token보다 큽니다.')
       remainToken = 0;
@@ -108,10 +106,8 @@ export default function Tutorial() {
   const calLimit = (key: string, num: string, beforeVal: string) => {
     var sumSubmit = 0;
     var remainToken = 0;
-    var errMsgState = ''
     var errMsgList:string[] = [];
     if (key === "score1Submit") {
-      errMsgState = "score1ErrMsg"
       sumSubmit = Number(num) + Number(score2Submit) + Number(score3Submit);
       if (sumSubmit > totalToken) {
         errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
@@ -122,7 +118,6 @@ export default function Tutorial() {
       }
     }
     if (key === "score2Submit") {
-      errMsgState = "score2ErrMsg"
       sumSubmit = Number(num) + Number(score1Submit) + Number(score3Submit);
       if (sumSubmit > totalToken) {
         errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
@@ -133,7 +128,6 @@ export default function Tutorial() {
       }
     }
     if (key === "score3Submit") {
-      errMsgState = "score2ErrMsg"
       sumSubmit = Number(num) + Number(score1Submit) + Number(score2Submit);
       if (sumSubmit > totalToken) {
         errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
@@ -154,8 +148,9 @@ export default function Tutorial() {
       errMsgList.push('0을 더 이상 사용할 수 없습니다.')
       setErrmsg((obj) => ({
         ...obj,
-        [errMsgState] : errMsgList
+        ErrMsg : errMsgList
       }));
+      setForm((obj) => ({ ...obj , thisScore: key}));
       return;
     }
 
@@ -209,11 +204,30 @@ export default function Tutorial() {
 
     setErrmsg((obj) => ({
       ...obj,
-      [errMsgState] : errMsgList
+      ErrMsg : errMsgList
     }));
-    setForm((obj) => ({ ...obj, [key]: num }));
+    setForm((obj) => ({ ...obj, [key]: num , thisScore: key}));
     setInfo((obj) => ({ ...obj, token: remainToken }));
   };
+
+  const handleDownKey = (key:string) => (e: React.KeyboardEvent<HTMLElement>) => {
+   var beforeVal = "";
+      if (key === "score1Submit") {
+        beforeVal = score1Submit;
+      }
+      if (key === "score2Submit") {
+        beforeVal = score2Submit;
+      }
+      if (key === "score3Submit") {
+        beforeVal = score3Submit;
+      }
+      if(e.key === beforeVal ){
+        setErrmsg((obj) => ({
+          ...obj,
+          ErrMsg : []
+        }));
+      }
+  }
 
   const changed = useCallback(
     (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -230,7 +244,9 @@ export default function Tutorial() {
       }
 
       var inputNum = value.replace(/[^0-9]/g, "");
-      calLimit(key, inputNum, beforeVal);
+      if(inputNum !== ""){
+        calLimit(key, inputNum, beforeVal);
+      }
     },
     [score1Submit, score2Submit, score3Submit , token]
   );
@@ -294,13 +310,48 @@ export default function Tutorial() {
               className="w-full p-3 mb-4 input primary"
               value={score1Submit}
               onChange={changed("score1Submit")}
+              onKeyDown = {handleDownKey("score1Submit")}
             />
             </Col>
             </Row>
             <Row>
             <Col span= {12}>
-              {  score1ErrMsg.length !== 0 ?
-                score1ErrMsg.map((errMsg ,index) =>(
+              {  thisScore === "score1Submit"  && ErrMsg.length !== 0 ?
+                ErrMsg.map((errMsg ,index) =>(
+                  <p key={index}  >
+                    {errMsg}
+                  </p>)
+                  )
+                  :
+                  <p></p>
+              }
+            </Col>
+            </Row>
+          </Col>
+          <Col span={12}>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <Row>
+            <Col span= {4}>
+            <p>SCORE 2 :</p>
+            </Col>
+            <Col span= {4}>
+            <input
+              type="string"
+              name="scoreTwo"
+              className="w-full p-3 mb-4 input primary"
+              value={score2Submit}
+              onChange={changed("score2Submit")}
+              onKeyDown = {handleDownKey("score2Submit")}
+            />
+            </Col>
+            </Row>
+            <Row>
+            <Col span= {12}>
+              { thisScore === "score2Submit"  &&  ErrMsg.length !== 0 ?
+                ErrMsg.map((errMsg ,index) =>(
                   <p key={index}>
                     {errMsg}
                   </p>)
@@ -312,37 +363,43 @@ export default function Tutorial() {
             </Row>
           </Col>
           <Col span={12}>
-          
           </Col>
         </Row>
         <Row>
           <Col span={12}>
-            <p>SCORE 2 :</p>
-            <input
-              type="string"
-              name="scoreTwo"
-              className="w-full p-3 mb-4 input primary"
-              value={score2Submit}
-              onChange={changed("score2Submit")}
-            />
-          </Col>
-          <Col span={12}>
-            <p>{score2Submit}</p>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
+            <Row>
+            <Col span= {4}>
             <p>SCORE 3 :</p>
+            </Col>
+            <Col span= {4}>
             <input
               type="string"
               name="scoreThree"
               className="w-full p-3 mb-4 input primary"
               value={score3Submit}
               onChange={changed("score3Submit")}
+              onKeyDown = {handleDownKey("score3Submit")}
             />
+            </Col>
+            </Row>
+            <Row>
+            <Col span= {12}>
+              { thisScore === "score3Submit"  &&  ErrMsg.length !== 0 ?
+                ErrMsg.map((errMsg ,index) =>(
+                  <p key={index}>
+                    {errMsg}
+                  </p>)
+                  )
+                  :
+                  <p></p>
+              }
+            </Col>
+            </Row>
           </Col>
-          <Col span={12}></Col>
+          <Col span={12}>
+          </Col>
         </Row>
+        
       </div>
     </section>
   );
