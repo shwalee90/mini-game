@@ -6,12 +6,18 @@ import { Row, Col } from "antd";
 import TimerBar from "../components/TimerBar";
 import Table from "../components/Table";
 import "../css/tableStyles.css";
-import { Button, Icon } from "../theme/daisyui";
+
+import ScoreBoard from "../components/ScoreBoard";
+
 
 type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit" | "thisScore",
   string
 >;
+
+type total = {
+  totalToken : number
+}
 
 
 const initialFormState = {
@@ -32,27 +38,37 @@ const initialErrMsg = {
 }
 
 
-
-type UserInfoType = Record<"token" | "score", number>;
-
-const initialInfoState = {
-  token: 10,
-  score: 0,
-};
-
-type BanListType = {
+export interface UserInfoType {
+  token : number,
+  score : number,
   banScore1: boolean;
   banScore2: boolean;
   banScore3: boolean;
   zeroCnt: number;
-};
+  totalToken : number;
+}
 
-const initialBanList = {
+const initialInfoState = {
+  token: 10,
+  score: 0,
   banScore1: false,
   banScore2: false,
   banScore3: false,
   zeroCnt: 0,
+  totalToken : 10,
 };
+
+// export interface BanListType  {
+
+// };
+
+// const initialBanList = {
+
+// };
+
+
+
+
 
 export default function Tutorial() {
   const [{ score1Submit, score2Submit, score3Submit ,thisScore }, setForm] =
@@ -61,8 +77,10 @@ export default function Tutorial() {
   const [{ ErrMsg }, setErrmsg] =
     useState<errMsgType>(initialErrMsg);
 
+
+
   const [{ banScore1, banScore2, banScore3, zeroCnt }, setBanList] =
-    useState<BanListType>(initialBanList);
+    useState<UserInfoType>(initialInfoState);
 
   const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
 
@@ -73,6 +91,7 @@ export default function Tutorial() {
   } ,[])
 
   var totalToken = initialInfoState.token;
+
   const calRemain = (
     num: string,
     sum: number,
@@ -178,7 +197,7 @@ export default function Tutorial() {
       }
     }
 
-    if (Number(num) === 0) {
+    if (Number(num) === 0 && Number(beforeVal) !== 0) {
       if (key === "score1Submit") {
         setBanList((obj) => ({
           ...obj,
@@ -256,44 +275,9 @@ export default function Tutorial() {
       <div>
         <p className="p-4 text-xl text-center ">Tutorial</p>
       </div>
-      <Row>
-        <Col span={12}>
-          <p> 점수 : {JSON.stringify("")}</p>
-          <p> 총 토큰 : {totalToken}</p>
-          <p> 남은 토큰 : {token}</p>
-          <p> 0 사용 횟수 : {zeroCnt} / 2</p>
-          <Row>
-            <p>SCORE1 :</p>{" "}
-            {banScore1 === false && zeroCnt !== 2 ? (
-              <Button className="btn btn-success"> 사용 가능</Button>
-            ) : (
-              <Button className="btn btn-error"> 사용 불가능</Button>
-            )}
-          </Row>
-          <Row>
-            <p>SCORE2 : </p>{" "}
-            {banScore2 === false && zeroCnt !== 2 ? (
-              <Button className="btn btn-success"> 사용 가능</Button>
-            ) : (
-              <Button className="btn btn-error"> 사용 불가능</Button>
-            )}
-          </Row>
-          <Row>
-            <p>SCORE3 : </p>{" "}
-            {banScore3 === false && zeroCnt !== 2 ? (
-              <Button className="btn btn-success"> 사용 가능</Button>
-            ) : (
-              <Button className="btn btn-error"> 사용 불가능</Button>
-            )}
-          </Row>
-        </Col>
-        <Col span={12}>
-          <p> 점수 : {JSON.stringify("")}</p>
-          <p> 총 토큰 : {totalToken}</p>
-          <p> 남은 토큰 : {token}</p>
-        </Col>
-      </Row>
-
+     
+      <ScoreBoard  score={score} zeroCnt= {zeroCnt} banScore1 ={banScore1} banScore2={banScore2} banScore3 ={banScore3} token ={token} totalToken = {totalToken} ></ScoreBoard> 
+      
       <TimerBar></TimerBar>
 
       <div>
