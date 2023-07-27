@@ -10,7 +10,7 @@ import "../css/tableStyles.css";
 import ScoreBoard from "../components/ScoreBoard";
 
 
-type SubmitType = Record<
+export type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit" | "thisScore",
   string
 >;
@@ -38,17 +38,23 @@ const initialErrMsg = {
 }
 
 
-export interface UserInfoType {
+export type UserInfoType = {
+  round: number,
   token : number,
   score : number,
+
+  totalToken : number;
+}
+
+export type BanInfoType ={
   banScore1: boolean;
   banScore2: boolean;
   banScore3: boolean;
   zeroCnt: number;
-  totalToken : number;
 }
 
 const initialInfoState = {
+  round :1,
   token: 10,
   score: 0,
   banScore1: false,
@@ -78,15 +84,13 @@ export default function Tutorial() {
     useState<errMsgType>(initialErrMsg);
 
 
+  const [BanInfo , setBanList] = useState<BanInfoType>(initialInfoState);
 
-  const [{ banScore1, banScore2, banScore3, zeroCnt }, setBanList] =
-    useState<UserInfoType>(initialInfoState);
-
-  const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
+  const [UserInfo , setInfo] = useState<UserInfoType>(initialInfoState);
 
   useEffect(() => {
 
-    setInfo((obj) => ({ ...obj, token: token-3 }));
+    setInfo((obj) => ({ ...obj, token: UserInfo.token-3 }));
 
   } ,[])
 
@@ -102,17 +106,17 @@ export default function Tutorial() {
     var remainToken = 0;
 
     var diffNum = Number(num) - Number(beforeVal);
-    if (token < diffNum && diffNum > 0) {
+    if (UserInfo.token < diffNum && diffNum > 0) {
       errMsgList.push('입력값이 남은 token보다 큽니다.')
       remainToken = 0;
     }
     
-    else if (token > diffNum && diffNum > 0) {
-      remainToken = token - diffNum;
+    else if (UserInfo.token > diffNum && diffNum > 0) {
+      remainToken = UserInfo.token - diffNum;
     }
 
     else  {
-      remainToken = token - diffNum;
+      remainToken = UserInfo.token - diffNum;
     }
     
     tokenAndErrMsg.set('remainToken' , remainToken);
@@ -163,7 +167,7 @@ export default function Tutorial() {
     errMsgList = tokenAndErrMsg.get('errMsgList');
 
 
-    if (zeroCnt === 2 && Number(num) === 0) {
+    if (BanInfo.zeroCnt === 2 && Number(num) === 0) {
       errMsgList.push('0을 더 이상 사용할 수 없습니다.')
       setErrmsg((obj) => ({
         ...obj,
@@ -177,21 +181,21 @@ export default function Tutorial() {
       if (key === "score1Submit") {
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt - 1,
+          zeroCnt: BanInfo.zeroCnt - 1,
           banScore1: false,
         }));
       }
       if (key === "score2Submit") {
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt - 1,
+          zeroCnt: BanInfo.zeroCnt - 1,
           banScore2: false,
         }));
       }
       if (key === "score3Submit") {
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt - 1,
+          zeroCnt: BanInfo.zeroCnt - 1,
           banScore3: false,
         }));
       }
@@ -201,21 +205,21 @@ export default function Tutorial() {
       if (key === "score1Submit") {
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt + 1,
+          zeroCnt: BanInfo.zeroCnt + 1,
           banScore1: true,
         }));
       }
       if (key === "score2Submit") {
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt + 1,
+          zeroCnt: BanInfo.zeroCnt + 1,
           banScore2: true,
         }));
       }
       if (key === "score3Submit") {
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt + 1,
+          zeroCnt: BanInfo.zeroCnt + 1,
           banScore3: true,
         }));
       }
@@ -267,7 +271,7 @@ export default function Tutorial() {
         calLimit(key, inputNum, beforeVal);
       }
     },
-    [score1Submit, score2Submit, score3Submit , token]
+    [score1Submit, score2Submit, score3Submit , UserInfo.token]
   );
 
   return (
@@ -276,7 +280,7 @@ export default function Tutorial() {
         <p className="p-4 text-xl text-center ">Tutorial</p>
       </div>
      
-      <ScoreBoard  score={score} zeroCnt= {zeroCnt} banScore1 ={banScore1} banScore2={banScore2} banScore3 ={banScore3} token ={token} totalToken = {totalToken} ></ScoreBoard> 
+      <ScoreBoard UserInfoType={UserInfo} BanInfoType = {BanInfo} ></ScoreBoard> 
       
       <TimerBar></TimerBar>
 
