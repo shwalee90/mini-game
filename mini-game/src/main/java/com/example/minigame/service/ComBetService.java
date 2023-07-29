@@ -12,6 +12,8 @@ public class ComBetService {
         findNum(0 , token);
         ArrayList<Integer> pick = randomPickNum(token);
 
+
+        //쓰레드로 구현??
         round = round+1
         return pick;
     }
