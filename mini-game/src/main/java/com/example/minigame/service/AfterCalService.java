@@ -1,9 +1,11 @@
 package com.example.minigame.service;
 
-import com.example.minigame.request.GameUser;
+import com.example.minigame.repository.GameUser;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 
+@Service
 public class AfterCalService {
 
 

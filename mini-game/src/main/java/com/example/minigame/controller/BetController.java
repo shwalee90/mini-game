@@ -1,8 +1,9 @@
 package com.example.minigame.controller;
 
 import com.example.minigame.service.AfterCalService;
+import com.example.minigame.service.ComBetService;
 import com.example.minigame.service.ResultCalculService;
-import com.example.minigame.request.GameUser;
+import com.example.minigame.repository.GameUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 
 @RestController
@@ -52,7 +51,7 @@ public class BetController {
     }
 
     @PostMapping("/betting/com")
-    public ResponseEntity<LinkedList<GameUser>> betting(@RequestBody LinkedList<GameUser> gameUserList)
+    public ResponseEntity<LinkedList<GameUser>> bettingComputer(@RequestBody LinkedList<GameUser> gameUserList)
     {
 
         int roundNum = gameUserList.get(0).getRoundNum();

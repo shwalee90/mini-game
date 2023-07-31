@@ -1,9 +1,17 @@
+package com.example.minigame.service;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+@Service
 public class ComBetService {
     static int [] submitArr = new int[3];
     static ArrayList<ArrayList<Integer>> rListGroup = new ArrayList<ArrayList<Integer>>();
     static int zeroCnt = 0;
     static int round = 1;
     static boolean[] banArr = new boolean[] {false , false, false};
+
 
 
 
@@ -14,7 +22,7 @@ public class ComBetService {
 
 
         //쓰레드로 구현??
-        round = round+1
+        round = round+1;
         return pick;
     }
 
@@ -107,7 +115,6 @@ public class ComBetService {
                 return;
             }
         }
-
         if(cnt == 3){
             return;
         }

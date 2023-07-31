@@ -1,21 +1,21 @@
-package com.example.minigame.request;
+package com.example.minigame.repository;
 
 import java.util.ArrayList;
 
 public class GameUser {
 
 
-    int token = 10;
-    int roundNum = 1;
-    int thisRoundScore = 0;
-    int totalScore = 0;
-    String status = "EQUAL";
+    private int token = 10;
+    private int roundNum = 1;
+    private int thisRoundScore = 0;
+    private int totalScore = 0;
+    private String status = "EQUAL";
 
-    ArrayList<Integer> banList = new ArrayList<>();
+    private boolean [] banList = new boolean[3];
 
-    int betLev1 = 0;
-    int betLev2 = 0;
-    int betLev3 = 0;
+    private int betLev1 = 0;
+    private int betLev2 = 0;
+    private int betLev3 = 0;
 
 
     public int getToken() {
@@ -58,11 +58,11 @@ public class GameUser {
         this.status = status;
     }
 
-    public ArrayList<Integer> getBanList() {
+    public boolean[] getBanList() {
         return banList;
     }
 
-    public void setBanList(ArrayList<Integer> banList) {
+    public void setBanList(boolean[] banList) {
         this.banList = banList;
     }
 
