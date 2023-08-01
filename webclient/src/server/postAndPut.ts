@@ -3,7 +3,10 @@ import { getServerUrl } from "./getServerUrl";
 const postAndPut = (methodName: string) => (path: string, data: object) => {
   return fetch(getServerUrl(path), {
     method: methodName,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
     body: JSON.stringify(data),
     mode: "cors",
     cache: "no-cache",

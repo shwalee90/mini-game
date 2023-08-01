@@ -9,25 +9,23 @@ public class ComBetService {
     static int [] submitArr = new int[3];
     static ArrayList<ArrayList<Integer>> rListGroup = new ArrayList<ArrayList<Integer>>();
     static int zeroCnt = 0;
-    static int round = 1;
     static boolean[] banArr = new boolean[] {false , false, false};
 
 
 
 
-    public ArrayList<Integer> processComBet(int token ){
+    public ArrayList<Integer> processComBet(int token , int round){
 
         findNum(0 , token);
-        ArrayList<Integer> pick = randomPickNum(token);
+        ArrayList<Integer> pick = randomPickNum(token , round);
 
 
         //쓰레드로 구현??
-        round = round+1;
         return pick;
     }
 
 
-    static private ArrayList<Integer> randomPickNum(int token) {
+    static private ArrayList<Integer> randomPickNum(int token , int round) {
 
         ArrayList<ArrayList<Integer>> zeroGroup = new ArrayList<ArrayList<Integer>>();
         ArrayList<ArrayList<Integer>> etcGroup = new ArrayList<ArrayList<Integer>>();

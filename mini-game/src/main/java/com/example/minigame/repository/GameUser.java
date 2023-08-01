@@ -1,37 +1,35 @@
 package com.example.minigame.repository;
 
-import java.util.ArrayList;
-
 public class GameUser {
 
 
-    private int token = 10;
-    private int roundNum = 1;
+    private int totalToken = 10;
+    private int round = 1;
     private int thisRoundScore = 0;
     private int totalScore = 0;
     private String status = "EQUAL";
 
-    private boolean [] banList = new boolean[3];
+    private boolean [] banList = {false, false ,false};
 
-    private int betLev1 = 0;
-    private int betLev2 = 0;
-    private int betLev3 = 0;
+    private int score1Submit = 1;
+    private int score2Submit = 1;
+    private int score3Submit = 1;
 
 
-    public int getToken() {
-        return token;
+    public int getTotalToken() {
+        return totalToken;
     }
 
-    public void setToken(int token) {
-        this.token = token;
+    public void setTotalToken(int totalToken) {
+        this.totalToken = totalToken;
     }
 
-    public int getRoundNum() {
-        return roundNum;
+    public int getRound() {
+        return round;
     }
 
-    public void setRoundNum(int roundNum) {
-        this.roundNum = roundNum;
+    public void setRound(int round) {
+        this.round = round;
     }
 
     public int getThisRoundScore() {
@@ -66,28 +64,28 @@ public class GameUser {
         this.banList = banList;
     }
 
-    public int getBetLev1() {
-        return betLev1;
+    public int getScore1Submit() {
+        return score1Submit;
     }
 
-    public void setBetLev1(int betLev1) {
-        this.betLev1 = betLev1;
+    public void setScore1Submit(int score1Submit) {
+        this.score1Submit = score1Submit;
     }
 
-    public int getBetLev2() {
-        return betLev2;
+    public int getScore2Submit() {
+        return score2Submit;
     }
 
-    public void setBetLev2(int betLev2) {
-        this.betLev2 = betLev2;
+    public void setScore2Submit(int betLev2) {
+        this.score2Submit = betLev2;
     }
 
-    public int getBetLev3() {
-        return betLev3;
+    public int getScore3Submit() {
+        return score3Submit;
     }
 
-    public void setBetLev3(int betLev3) {
-        this.betLev3 = betLev3;
+    public void setScore3Submit(int score3Submit) {
+        this.score3Submit = score3Submit;
     }
 
 }
