@@ -35,20 +35,28 @@ export type UserInfoType = {
   status: string;
 };
 
+export type ComInfoType = {
+  token: number;
+  totalScore: number;
+  totalToken: number;
+};
+
+
+
 export type BanInfoType = {
   // banScore1: boolean;
   // banScore2: boolean;
   // banScore3: boolean;
-  banList: boolean[];
-  zeroCnt: number;
+  banList: boolean[][];
+  zeroCnt: number[];
 };
 
 const initialInfoState = {
   round: 1,
   token: 10,
   totalScore: 0,
-  banList: [false, false, false],
-  zeroCnt: 0,
+  banList: [[false, false, false],[false, false, false]],
+  zeroCnt: [0,0],
   totalToken: 10,
   status: "EQUAL",
 };
@@ -81,6 +89,8 @@ export default function Tutorial() {
   const [BanInfo, setBanList] = useState<BanInfoType>(initialInfoState);
 
   const [UserInfo, setInfo] = useState<UserInfoType>(initialInfoState);
+
+  const [ComInfo, setComInfo] = useState<ComInfoType>(initialInfoState);
 
   const [postData, setPostData] = useState<
     UserInfoType | BanInfoType | SubmitType
@@ -115,6 +125,11 @@ export default function Tutorial() {
           totalScore: postData.totalScore,
           totalToken: postData.totalToken,
         }));
+        setForm((obj) => ({
+          ...obj,
+          score1Submit: '1',
+          score2Submit: '1',
+          score3Submit: '1',}))
       })
       .catch((error) => console.log(error));
   }, [postData]);
@@ -193,7 +208,7 @@ export default function Tutorial() {
     remainToken = tokenAndErrMsg.get("remainToken");
     errMsgList = tokenAndErrMsg.get("errMsgList");
 
-    if (BanInfo.zeroCnt === 2 && Number(num) === 0) {
+    if (BanInfo.zeroCnt[0] === 2 && Number(num) === 0) {
       errMsgList.push("0을 더 이상 사용할 수 없습니다.");
       setErrmsg((obj) => ({
         ...obj,
@@ -206,27 +221,27 @@ export default function Tutorial() {
     if (Number(beforeVal) === 0 && Number(num) !== 0) {
       let copyBanList = BanInfo.banList;
       if (key === "score1Submit") {
-        copyBanList[0] = false;
+        copyBanList[0][0] = false;
 
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: BanInfo.zeroCnt - 1,
+          zeroCnt: [BanInfo.zeroCnt[0] - 1, BanInfo.zeroCnt[1]],
           banList: copyBanList,
         }));
       }
       if (key === "score2Submit") {
-        copyBanList[1] = false;
+        copyBanList[0][1] = false;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: BanInfo.zeroCnt - 1,
+          zeroCnt: [BanInfo.zeroCnt[0] - 1, BanInfo.zeroCnt[1]],
           banList: copyBanList,
         }));
       }
       if (key === "score3Submit") {
-        copyBanList[2] = false;
+        copyBanList[0][2] = false;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: BanInfo.zeroCnt - 1,
+          zeroCnt: [BanInfo.zeroCnt[0] - 1, BanInfo.zeroCnt[1]],
           banList: copyBanList,
         }));
       }
@@ -235,26 +250,26 @@ export default function Tutorial() {
     if (Number(num) === 0 && Number(beforeVal) !== 0) {
       let copyBanList = BanInfo.banList;
       if (key === "score1Submit") {
-        copyBanList[0] = true;
+        copyBanList[0][0] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: BanInfo.zeroCnt + 1,
+          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
           banList: copyBanList,
         }));
       }
       if (key === "score2Submit") {
-        copyBanList[1] = true;
+        copyBanList[0][1] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: BanInfo.zeroCnt + 1,
+          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
           banList: copyBanList,
         }));
       }
       if (key === "score3Submit") {
-        copyBanList[2] = true;
+        copyBanList[0][2] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: BanInfo.zeroCnt + 1,
+          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
           banList: copyBanList,
         }));
       }
@@ -325,6 +340,7 @@ export default function Tutorial() {
         UserInfo={UserInfo}
         BanInfo={BanInfo}
         Submit={SubmitInfo}
+        ComInfo={ComInfo}
         postTest={postTest}
       ></ScoreBoard>
 
