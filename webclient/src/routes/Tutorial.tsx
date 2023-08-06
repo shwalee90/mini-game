@@ -6,99 +6,155 @@ import { Row, Col } from "antd";
 import TimerBar from "../components/TimerBar";
 import Table from "../components/Table";
 import "../css/tableStyles.css";
-import { Button, Icon } from "../theme/daisyui";
 
-type SubmitType = Record<
+import ScoreBoard from "../components/ScoreBoard";
+
+export type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit" | "thisScore",
   string
 >;
-
 
 const initialFormState = {
   score1Submit: "1",
   score2Submit: "1",
   score3Submit: "1",
-  thisScore : '',
+  thisScore: "",
 };
 
-type errMsgType = Record<
-  "ErrMsg",
-  string[]
->;
+type errMsgType = Record<"ErrMsg", string[]>;
 
 const initialErrMsg = {
-  ErrMsg : [] ,
+  ErrMsg: [],
+};
 
-}
+export type UserInfoType = {
+  round: number;
+  token: number;
+  totalScore: number;
+  totalToken: number;
+  status: string;
+};
+
+export type ComInfoType = {
+  token: number;
+  totalScore: number;
+  totalToken: number;
+};
 
 
 
-type UserInfoType = Record<"token" | "score", number>;
+export type BanInfoType = {
+  // banScore1: boolean;
+  // banScore2: boolean;
+  // banScore3: boolean;
+  banList: boolean[][];
+  zeroCnt: number[];
+};
 
 const initialInfoState = {
+  round: 1,
   token: 10,
-  score: 0,
+  totalScore: 0,
+  banList: [[false, false, false],[false, false, false]],
+  zeroCnt: [0,0],
+  totalToken: 10,
+  status: "EQUAL",
 };
 
-type BanListType = {
-  banScore1: boolean;
-  banScore2: boolean;
-  banScore3: boolean;
-  zeroCnt: number;
-};
-
-const initialBanList = {
-  banScore1: false,
-  banScore2: false,
-  banScore3: false,
+const initialPost = {
+  round: 1,
+  token: 10,
+  totalScore: 0,
+  totalToken: 10,
+  banList: [false, false, false],
   zeroCnt: 0,
+  score1Submit: "1",
+  score2Submit: "1",
+  score3Submit: "1",
+  status: "EQUAL",
 };
+// export interface BanListType  {
+
+// };
+
+// const initialBanList = {
+
+// };
 
 export default function Tutorial() {
-  const [{ score1Submit, score2Submit, score3Submit ,thisScore }, setForm] =
-    useState<SubmitType>(initialFormState);
+  const [SubmitInfo, setForm] = useState<SubmitType>(initialFormState);
 
-  const [{ ErrMsg }, setErrmsg] =
-    useState<errMsgType>(initialErrMsg);
+  const [{ ErrMsg }, setErrmsg] = useState<errMsgType>(initialErrMsg);
 
-  const [{ banScore1, banScore2, banScore3, zeroCnt }, setBanList] =
-    useState<BanListType>(initialBanList);
+  const [BanInfo, setBanList] = useState<BanInfoType>(initialInfoState);
 
-  const [{ token, score }, setInfo] = useState<UserInfoType>(initialInfoState);
+  const [UserInfo, setInfo] = useState<UserInfoType>(initialInfoState);
+
+  const [ComInfo, setComInfo] = useState<ComInfoType>(initialInfoState);
+
+  const [postData, setPostData] = useState<
+    UserInfoType | BanInfoType | SubmitType
+  >(initialPost);
 
   useEffect(() => {
+    setInfo((obj) => ({ ...obj, token: UserInfo.token - 3 }));
+  }, []);
 
-    setInfo((obj) => ({ ...obj, token: token-3 }));
+  useEffect(() => {
+    setPostData((obj) => ({
+      ...obj,
+      round: UserInfo.round,
+      totalScore: UserInfo.totalScore,
+      totalToken: UserInfo.totalToken,
+      banList: BanInfo.banList,
+      score1Submit: SubmitInfo.score1Submit,
+      score2Submit: SubmitInfo.score2Submit,
+      score3Submit: SubmitInfo.score3Submit,
+    }));
+  }, [UserInfo, BanInfo, SubmitInfo]);
 
-  } ,[])
+  const postTest = useCallback(() => {
+    post("/betting/tutorial", postData)
+      .then((res) => res.json())
+      .then((postData) => {
+        console.log("apiResult : ", postData);
+        setInfo((obj) => ({
+          ...obj,
+          round: postData.round,
+          status: postData.status,
+          totalScore: postData.totalScore,
+          totalToken: postData.totalToken,
+        }));
+        setForm((obj) => ({
+          ...obj,
+          score1Submit: '1',
+          score2Submit: '1',
+          score3Submit: '1',}))
+      })
+      .catch((error) => console.log(error));
+  }, [postData]);
 
-  var totalToken = initialInfoState.token;
   const calRemain = (
     num: string,
     sum: number,
-    beforeVal: string ,
-    errMsgList : string[]
+    beforeVal: string,
+    errMsgList: string[]
   ) => {
     let tokenAndErrMsg = new Map();
     var remainToken = 0;
 
     var diffNum = Number(num) - Number(beforeVal);
-    if (token < diffNum && diffNum > 0) {
-      errMsgList.push('입력값이 남은 token보다 큽니다.')
+    if (UserInfo.token < diffNum && diffNum > 0) {
+      errMsgList.push("입력값이 남은 token보다 큽니다.");
       remainToken = 0;
-    }
-    
-    else if (token > diffNum && diffNum > 0) {
-      remainToken = token - diffNum;
+    } else if (UserInfo.token > diffNum && diffNum > 0) {
+      remainToken = UserInfo.token - diffNum;
+    } else {
+      remainToken = UserInfo.token - diffNum;
     }
 
-    else  {
-      remainToken = token - diffNum;
-    }
-    
-    tokenAndErrMsg.set('remainToken' , remainToken);
-    tokenAndErrMsg.set('errMsgList' , errMsgList )
-
+    tokenAndErrMsg.set("remainToken", remainToken);
+    tokenAndErrMsg.set("errMsgList", errMsgList);
 
     return tokenAndErrMsg;
   };
@@ -106,149 +162,172 @@ export default function Tutorial() {
   const calLimit = (key: string, num: string, beforeVal: string) => {
     var sumSubmit = 0;
     var remainToken = 0;
-    var errMsgList:string[] = [];
+    var errMsgList: string[] = [];
     if (key === "score1Submit") {
-      sumSubmit = Number(num) + Number(score2Submit) + Number(score3Submit);
-      if (sumSubmit > totalToken) {
-        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
+      sumSubmit =
+        Number(num) +
+        Number(SubmitInfo.score2Submit) +
+        Number(SubmitInfo.score3Submit);
+      if (sumSubmit > UserInfo.totalToken) {
+        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.");
         num = (
-          totalToken -
-          (Number(score2Submit) + Number(score3Submit))
+          UserInfo.totalToken -
+          (Number(SubmitInfo.score2Submit) + Number(SubmitInfo.score3Submit))
         ).toString();
       }
     }
     if (key === "score2Submit") {
-      sumSubmit = Number(num) + Number(score1Submit) + Number(score3Submit);
-      if (sumSubmit > totalToken) {
-        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
+      sumSubmit =
+        Number(num) +
+        Number(SubmitInfo.score1Submit) +
+        Number(SubmitInfo.score3Submit);
+      if (sumSubmit > UserInfo.totalToken) {
+        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.");
         num = (
-          totalToken -
-          (Number(score1Submit) + Number(score3Submit))
+          UserInfo.totalToken -
+          (Number(SubmitInfo.score1Submit) + Number(SubmitInfo.score3Submit))
         ).toString();
       }
     }
     if (key === "score3Submit") {
-      sumSubmit = Number(num) + Number(score1Submit) + Number(score2Submit);
-      if (sumSubmit > totalToken) {
-        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.")
+      sumSubmit =
+        Number(num) +
+        Number(SubmitInfo.score1Submit) +
+        Number(SubmitInfo.score2Submit);
+      if (sumSubmit > UserInfo.totalToken) {
+        errMsgList.push("입력값의 합이 총 토큰 보다 큽니다.");
         num = (
-          totalToken -
-          (Number(score1Submit) + Number(score2Submit))
+          UserInfo.totalToken -
+          (Number(SubmitInfo.score1Submit) + Number(SubmitInfo.score2Submit))
         ).toString();
       }
     }
 
-    let tokenAndErrMsg  = calRemain(num, sumSubmit, beforeVal,errMsgList);
+    let tokenAndErrMsg = calRemain(num, sumSubmit, beforeVal, errMsgList);
 
-    remainToken = tokenAndErrMsg.get('remainToken');
-    errMsgList = tokenAndErrMsg.get('errMsgList');
+    remainToken = tokenAndErrMsg.get("remainToken");
+    errMsgList = tokenAndErrMsg.get("errMsgList");
 
-
-    if (zeroCnt === 2 && Number(num) === 0) {
-      errMsgList.push('0을 더 이상 사용할 수 없습니다.')
+    if (BanInfo.zeroCnt[0] === 2 && Number(num) === 0) {
+      errMsgList.push("0을 더 이상 사용할 수 없습니다.");
       setErrmsg((obj) => ({
         ...obj,
-        ErrMsg : errMsgList
+        ErrMsg: errMsgList,
       }));
-      setForm((obj) => ({ ...obj , thisScore: key}));
+      setForm((obj) => ({ ...obj, thisScore: key }));
       return;
     }
 
     if (Number(beforeVal) === 0 && Number(num) !== 0) {
+      let copyBanList = BanInfo.banList;
       if (key === "score1Submit") {
+        copyBanList[0][0] = false;
+
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt - 1,
-          banScore1: false,
+          zeroCnt: [BanInfo.zeroCnt[0] - 1, BanInfo.zeroCnt[1]],
+          banList: copyBanList,
         }));
       }
       if (key === "score2Submit") {
+        copyBanList[0][1] = false;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt - 1,
-          banScore2: false,
+          zeroCnt: [BanInfo.zeroCnt[0] - 1, BanInfo.zeroCnt[1]],
+          banList: copyBanList,
         }));
       }
       if (key === "score3Submit") {
+        copyBanList[0][2] = false;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt - 1,
-          banScore3: false,
+          zeroCnt: [BanInfo.zeroCnt[0] - 1, BanInfo.zeroCnt[1]],
+          banList: copyBanList,
         }));
       }
     }
 
-    if (Number(num) === 0) {
+    if (Number(num) === 0 && Number(beforeVal) !== 0) {
+      let copyBanList = BanInfo.banList;
       if (key === "score1Submit") {
+        copyBanList[0][0] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt + 1,
-          banScore1: true,
+          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
+          banList: copyBanList,
         }));
       }
       if (key === "score2Submit") {
+        copyBanList[0][1] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt + 1,
-          banScore2: true,
+          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
+          banList: copyBanList,
         }));
       }
       if (key === "score3Submit") {
+        copyBanList[0][2] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: zeroCnt + 1,
-          banScore3: true,
+          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
+          banList: copyBanList,
         }));
       }
     }
 
     setErrmsg((obj) => ({
       ...obj,
-      ErrMsg : errMsgList
+      ErrMsg: errMsgList,
     }));
-    setForm((obj) => ({ ...obj, [key]: num , thisScore: key}));
+    setForm((obj) => ({ ...obj, [key]: num, thisScore: key }));
     setInfo((obj) => ({ ...obj, token: remainToken }));
   };
 
-  const handleDownKey = (key:string) => (e: React.KeyboardEvent<HTMLElement>) => {
-   var beforeVal = "";
+  const handleDownKey =
+    (key: string) => (e: React.KeyboardEvent<HTMLElement>) => {
+      var beforeVal = "";
       if (key === "score1Submit") {
-        beforeVal = score1Submit;
+        beforeVal = SubmitInfo.score1Submit;
       }
       if (key === "score2Submit") {
-        beforeVal = score2Submit;
+        beforeVal = SubmitInfo.score2Submit;
       }
       if (key === "score3Submit") {
-        beforeVal = score3Submit;
+        beforeVal = SubmitInfo.score3Submit;
       }
-      if(e.key === beforeVal ){
+      if (e.key === beforeVal) {
         setErrmsg((obj) => ({
           ...obj,
-          ErrMsg : []
+          ErrMsg: [],
         }));
       }
-  }
+    };
 
   const changed = useCallback(
     (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       var beforeVal = "";
       if (key === "score1Submit") {
-        beforeVal = score1Submit;
+        beforeVal = SubmitInfo.score1Submit;
       }
       if (key === "score2Submit") {
-        beforeVal = score2Submit;
+        beforeVal = SubmitInfo.score2Submit;
       }
       if (key === "score3Submit") {
-        beforeVal = score3Submit;
+        beforeVal = SubmitInfo.score3Submit;
       }
 
       var inputNum = value.replace(/[^0-9]/g, "");
-      if(inputNum !== ""){
+      if (inputNum !== "") {
         calLimit(key, inputNum, beforeVal);
       }
     },
-    [score1Submit, score2Submit, score3Submit , token]
+    [
+      SubmitInfo.score1Submit,
+      SubmitInfo.score2Submit,
+      SubmitInfo.score3Submit,
+      UserInfo.token,
+    ]
   );
 
   return (
@@ -256,150 +335,106 @@ export default function Tutorial() {
       <div>
         <p className="p-4 text-xl text-center ">Tutorial</p>
       </div>
-      <Row>
-        <Col span={12}>
-          <p> 점수 : {JSON.stringify("")}</p>
-          <p> 총 토큰 : {totalToken}</p>
-          <p> 남은 토큰 : {token}</p>
-          <p> 0 사용 횟수 : {zeroCnt} / 2</p>
-          <Row>
-            <p>SCORE1 :</p>{" "}
-            {banScore1 === false && zeroCnt !== 2 ? (
-              <Button className="btn btn-success"> 사용 가능</Button>
-            ) : (
-              <Button className="btn btn-error"> 사용 불가능</Button>
-            )}
-          </Row>
-          <Row>
-            <p>SCORE2 : </p>{" "}
-            {banScore2 === false && zeroCnt !== 2 ? (
-              <Button className="btn btn-success"> 사용 가능</Button>
-            ) : (
-              <Button className="btn btn-error"> 사용 불가능</Button>
-            )}
-          </Row>
-          <Row>
-            <p>SCORE3 : </p>{" "}
-            {banScore3 === false && zeroCnt !== 2 ? (
-              <Button className="btn btn-success"> 사용 가능</Button>
-            ) : (
-              <Button className="btn btn-error"> 사용 불가능</Button>
-            )}
-          </Row>
-        </Col>
-        <Col span={12}>
-          <p> 점수 : {JSON.stringify("")}</p>
-          <p> 총 토큰 : {totalToken}</p>
-          <p> 남은 토큰 : {token}</p>
-        </Col>
-      </Row>
 
-      <TimerBar></TimerBar>
+      <ScoreBoard
+        UserInfo={UserInfo}
+        BanInfo={BanInfo}
+        Submit={SubmitInfo}
+        ComInfo={ComInfo}
+        postTest={postTest}
+      ></ScoreBoard>
 
       <div>
         <Row>
           <Col span={12}>
             <Row>
-            <Col span= {4}>
-            <p>SCORE 1 :</p>
-            </Col>
-            <Col span= {4}>
-            <input
-              type="string"
-              name="scoreOne"
-              className="w-full p-3 mb-4 input primary"
-              value={score1Submit}
-              onChange={changed("score1Submit")}
-              onKeyDown = {handleDownKey("score1Submit")}
-            />
-            </Col>
+              <Col span={4}>
+                <p>SCORE 1 :</p>
+              </Col>
+              <Col span={4}>
+                <input
+                  type="string"
+                  name="scoreOne"
+                  className="w-full p-3 mb-4 input primary"
+                  value={SubmitInfo.score1Submit}
+                  onChange={changed("score1Submit")}
+                  onKeyDown={handleDownKey("score1Submit")}
+                />
+              </Col>
             </Row>
             <Row>
-            <Col span= {12}>
-              {  thisScore === "score1Submit"  && ErrMsg.length !== 0 ?
-                ErrMsg.map((errMsg ,index) =>(
-                  <p key={index}  >
-                    {errMsg}
-                  </p>)
-                  )
-                  :
+              <Col span={12}>
+                {SubmitInfo.thisScore === "score1Submit" &&
+                ErrMsg.length !== 0 ? (
+                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
+                ) : (
                   <p></p>
-              }
-            </Col>
+                )}
+              </Col>
             </Row>
           </Col>
-          <Col span={12}>
-          </Col>
+          <Col span={12}></Col>
         </Row>
         <Row>
           <Col span={12}>
             <Row>
-            <Col span= {4}>
-            <p>SCORE 2 :</p>
-            </Col>
-            <Col span= {4}>
-            <input
-              type="string"
-              name="scoreTwo"
-              className="w-full p-3 mb-4 input primary"
-              value={score2Submit}
-              onChange={changed("score2Submit")}
-              onKeyDown = {handleDownKey("score2Submit")}
-            />
-            </Col>
+              <Col span={4}>
+                <p>SCORE 2 :</p>
+              </Col>
+              <Col span={4}>
+                <input
+                  type="string"
+                  name="scoreTwo"
+                  className="w-full p-3 mb-4 input primary"
+                  value={SubmitInfo.score2Submit}
+                  onChange={changed("score2Submit")}
+                  onKeyDown={handleDownKey("score2Submit")}
+                />
+              </Col>
             </Row>
             <Row>
-            <Col span= {12}>
-              { thisScore === "score2Submit"  &&  ErrMsg.length !== 0 ?
-                ErrMsg.map((errMsg ,index) =>(
-                  <p key={index}>
-                    {errMsg}
-                  </p>)
-                  )
-                  :
+              <Col span={12}>
+                {SubmitInfo.thisScore === "score2Submit" &&
+                ErrMsg.length !== 0 ? (
+                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
+                ) : (
                   <p></p>
-              }
-            </Col>
+                )}
+              </Col>
             </Row>
           </Col>
-          <Col span={12}>
-          </Col>
+          <Col span={12}></Col>
         </Row>
         <Row>
           <Col span={12}>
             <Row>
-            <Col span= {4}>
-            <p>SCORE 3 :</p>
-            </Col>
-            <Col span= {4}>
-            <input
-              type="string"
-              name="scoreThree"
-              className="w-full p-3 mb-4 input primary"
-              value={score3Submit}
-              onChange={changed("score3Submit")}
-              onKeyDown = {handleDownKey("score3Submit")}
-            />
-            </Col>
+              <Col span={4}>
+                <p>SCORE 3 :</p>
+              </Col>
+              <Col span={4}>
+                <input
+                  type="string"
+                  name="scoreThree"
+                  className="w-full p-3 mb-4 input primary"
+                  value={SubmitInfo.score3Submit}
+                  onChange={changed("score3Submit")}
+                  onKeyDown={handleDownKey("score3Submit")}
+                />
+              </Col>
             </Row>
             <Row>
-            <Col span= {12}>
-              { thisScore === "score3Submit"  &&  ErrMsg.length !== 0 ?
-                ErrMsg.map((errMsg ,index) =>(
-                  <p key={index}>
-                    {errMsg}
-                  </p>)
-                  )
-                  :
+              <Col span={12}>
+                {SubmitInfo.thisScore === "score3Submit" &&
+                ErrMsg.length !== 0 ? (
+                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
+                ) : (
                   <p></p>
-              }
-            </Col>
+                )}
+              </Col>
             </Row>
           </Col>
-          <Col span={12}>
-          </Col>
+          <Col span={12}></Col>
         </Row>
-        
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-package com.example.minigame.request;
+package com.example.minigame.repository;
 
 public class InitRule {
 

@@ -1,13 +1,17 @@
 package com.example.minigame.service;
 
-import com.example.minigame.request.GameUser;
+import com.example.minigame.repository.GameUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+@Service
 public class ResultCalculService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     Map<GameUser, Integer> userScoreMap = new HashMap<GameUser, Integer>();
 
@@ -19,25 +23,26 @@ public class ResultCalculService {
         GameUser user1 = userList.get(0);
         GameUser user2 = userList.get(1);
 
-        int val1 = userList.get(0).getBetLev1();
-        int val2 = userList.get(1).getBetLev1();
+        int val1 = userList.get(0).getScore1Submit();
+        int val2 = userList.get(1).getScore1Submit();
 
-        ArrayList<Integer> banList1 = user1.getBanList();
-        ArrayList<Integer> banList2 = user2.getBanList();
-
+        log.info(val1+" , " + val2);
         String status1 = user1.getStatus();
-        String status2 = user2.getStatus();
 
         if(val1 == 0 || val2 == 0) {
-            if (val1 == 0) {
-                banList1.add(1);
-                user1.setBanList(banList1);
+            if(status1.equals("WINNER")){
+                if(val1 == 0 && val2 == 0){
+                    user2.setThisRoundScore(user2.getThisRoundScore() + thisScore);
+                }
             }
-
-            if (val2 == 0) {
-                banList2.add(1);
-                user2.setBanList(banList2);
+            else if (status1.equals("LOSER")){
+                if(val1 == 0 && val2 == 0){
+                    user1.setThisRoundScore(user1.getThisRoundScore() + thisScore);
+                }
             }
+            guList.add(user1);
+            guList.add(user2);
+            return guList;
         }
 
         else{
@@ -135,26 +140,28 @@ public class ResultCalculService {
 
         int thisScore = 2;
 
-        int val1 = user1.getBetLev2();
-        int val2 = user2.getBetLev2();
+        int val1 = user1.getScore2Submit();
+        int val2 = user2.getScore2Submit();
 
-        ArrayList<Integer> banList1 = user1.getBanList();
-        ArrayList<Integer> banList2 = user2.getBanList();
+
+
+        boolean[] banList1 = user1.getBanList();
+        boolean[] banList2 = user2.getBanList();
 
         String status1 = user1.getStatus();
 
         if(val1 == 0 || val2 == 0) {
 
-            if (val1 == 0) {
-                banList1.add(2);
-                user1.setBanList(banList1);
+            if(status1.equals("WINNER")){
+                if(val1 == 0 && val2 == 0){
+                    user2.setThisRoundScore(user2.getThisRoundScore() + thisScore);
+                }
             }
-
-            if (val2 == 0) {
-                banList2.add(2);
-                user2.setBanList(banList2);
+            else if (status1.equals("LOSER")){
+                if(val1 == 0 && val2 == 0){
+                    user1.setThisRoundScore(user1.getThisRoundScore() + thisScore);
+                }
             }
-
             guList.add(user1);
             guList.add(user2);
             return guList;
@@ -249,30 +256,28 @@ public class ResultCalculService {
         GameUser user2 = userList.get(1);
         int thisScore = 3;
 
-        int val1 = user1.getBetLev3();
-        int val2 = user2.getBetLev3();
+        int val1 = user1.getScore3Submit();
+        int val2 = user2.getScore3Submit();
 
-        ArrayList<Integer> banList1 = user1.getBanList();
-        ArrayList<Integer> banList2 = user2.getBanList();
 
         String status1 = user1.getStatus();
 
         if(val1 == 0 || val2 == 0) {
-
-            if (val1 == 0) {
-                banList1.add(3);
-                user1.setBanList(banList1);
+            if(status1.equals("WINNER")){
+                if(val1 == 0 && val2 == 0){
+                    user2.setThisRoundScore(user2.getThisRoundScore() + thisScore);
+                }
             }
-
-            if (val2 == 0) {
-                banList2.add(3);
-                user2.setBanList(banList2);
+            else if (status1.equals("LOSER")){
+                if(val1 == 0 && val2 == 0){
+                    user1.setThisRoundScore(user1.getThisRoundScore() + thisScore);
+                }
             }
-
             guList.add(user1);
             guList.add(user2);
             return guList;
         }
+
 
         else{
             if(status1.equals("WINNER")){
