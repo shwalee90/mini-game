@@ -41,8 +41,6 @@ export type ComInfoType = {
   totalToken: number;
 };
 
-
-
 export type BanInfoType = {
   // banScore1: boolean;
   // banScore2: boolean;
@@ -55,8 +53,11 @@ const initialInfoState = {
   round: 1,
   token: 10,
   totalScore: 0,
-  banList: [[false, false, false],[false, false, false]],
-  zeroCnt: [0,0],
+  banList: [
+    [false, false, false],
+    [false, false, false],
+  ],
+  zeroCnt: [0, 0],
   totalToken: 10,
   status: "EQUAL",
 };
@@ -66,8 +67,11 @@ const initialPost = {
   token: 10,
   totalScore: 0,
   totalToken: 10,
-  banList: [false, false, false],
-  zeroCnt: 0,
+  banList: [
+    [false, false, false],
+    [false, false, false],
+  ],
+  zeroCnt: [0, 0],
   score1Submit: "1",
   score2Submit: "1",
   score3Submit: "1",
@@ -127,9 +131,10 @@ export default function Tutorial() {
         }));
         setForm((obj) => ({
           ...obj,
-          score1Submit: '1',
-          score2Submit: '1',
-          score3Submit: '1',}))
+          score1Submit: "1",
+          score2Submit: "1",
+          score3Submit: "1",
+        }));
       })
       .catch((error) => console.log(error));
   }, [postData]);
@@ -253,7 +258,7 @@ export default function Tutorial() {
         copyBanList[0][0] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] + 1],
           banList: copyBanList,
         }));
       }
@@ -261,7 +266,7 @@ export default function Tutorial() {
         copyBanList[0][1] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] + 1],
           banList: copyBanList,
         }));
       }
@@ -269,7 +274,7 @@ export default function Tutorial() {
         copyBanList[0][2] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1,BanInfo.zeroCnt[1] + 1],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] + 1],
           banList: copyBanList,
         }));
       }
@@ -361,6 +366,7 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score1Submit")}
                 />
               </Col>
+              {/* <RoundResult scoreResult={}></RoundResult> */}
             </Row>
             <Row>
               <Col span={12}>
@@ -373,7 +379,33 @@ export default function Tutorial() {
               </Col>
             </Row>
           </Col>
-          <Col span={12}></Col>
+          <Col span={12}>
+            <Row>
+              <Col span={4}>
+                <p>SCORE 1 :</p>
+              </Col>
+              <Col span={4}>
+                <input
+                  type="string"
+                  name="scoreOne"
+                  className="w-full p-3 mb-4 input primary"
+                  value={SubmitInfo.score1Submit}
+                  onChange={changed("score1Submit")}
+                  onKeyDown={handleDownKey("score1Submit")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                {SubmitInfo.thisScore === "score1Submit" &&
+                ErrMsg.length !== 0 ? (
+                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
+                ) : (
+                  <p></p>
+                )}
+              </Col>
+            </Row>
+          </Col>
         </Row>
         <Row>
           <Col span={12}>
@@ -403,7 +435,33 @@ export default function Tutorial() {
               </Col>
             </Row>
           </Col>
-          <Col span={12}></Col>
+          <Col span={12}>
+            <Row>
+              <Col span={4}>
+                <p>SCORE 2 :</p>
+              </Col>
+              <Col span={4}>
+                <input
+                  type="string"
+                  name="scoreTwo"
+                  className="w-full p-3 mb-4 input primary"
+                  value={SubmitInfo.score2Submit}
+                  onChange={changed("score2Submit")}
+                  onKeyDown={handleDownKey("score2Submit")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                {SubmitInfo.thisScore === "score2Submit" &&
+                ErrMsg.length !== 0 ? (
+                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
+                ) : (
+                  <p></p>
+                )}
+              </Col>
+            </Row>
+          </Col>
         </Row>
         <Row>
           <Col span={12}>
@@ -433,7 +491,33 @@ export default function Tutorial() {
               </Col>
             </Row>
           </Col>
-          <Col span={12}></Col>
+          <Col span={12}>
+            <Row>
+              <Col span={4}>
+                <p>SCORE 3 :</p>
+              </Col>
+              <Col span={4}>
+                <input
+                  type="string"
+                  name="scoreThree"
+                  className="w-full p-3 mb-4 input primary"
+                  value={SubmitInfo.score3Submit}
+                  onChange={changed("score3Submit")}
+                  onKeyDown={handleDownKey("score3Submit")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                {SubmitInfo.thisScore === "score3Submit" &&
+                ErrMsg.length !== 0 ? (
+                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
+                ) : (
+                  <p></p>
+                )}
+              </Col>
+            </Row>
+          </Col>
         </Row>
       </div>
     </section>
