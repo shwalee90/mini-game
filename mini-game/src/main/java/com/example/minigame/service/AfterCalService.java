@@ -42,7 +42,6 @@ public class AfterCalService {
             }
 
         } else if (val2>val1) {
-            log.info("2");
             user1.setTotalToken(user1.getTotalToken()-1);
             user2.setTotalToken(user2.getTotalToken()+1);
 
@@ -59,7 +58,6 @@ public class AfterCalService {
 
 
         }else{
-            log.info("3");
             if(user1.getTotalToken()>user2.getTotalToken()){
                 user1.setStatus("WINNER");
                 user2.setStatus("LOSER");
@@ -73,8 +71,6 @@ public class AfterCalService {
 
         }
 
-        log.info(String.valueOf(user1.getTotalToken()));
-        log.info(String.valueOf(user2.getTotalToken()));
 
         user1.setRound(user1.getRound()+1);
         user2.setRound(user2.getRound()+1);

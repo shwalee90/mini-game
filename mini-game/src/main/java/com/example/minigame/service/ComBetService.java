@@ -1,4 +1,5 @@
 package com.example.minigame.service;
+import com.example.minigame.repository.ComBetResult;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -8,24 +9,35 @@ import java.util.Random;
 public class ComBetService {
     static int [] submitArr = new int[3];
     static ArrayList<ArrayList<Integer>> rListGroup = new ArrayList<ArrayList<Integer>>();
-    static int zeroCnt = 0;
-    static boolean[] banArr = new boolean[] {false , false, false};
+
+    static boolean [] banArr ;
+
+    static int zeroCnt ;
+
+
+    public ComBetResult processComBet(int token , int round , boolean[] comBan){
+        zeroCnt = 0;
+        banArr = comBan;
+
+        for (int i = 0 ; i < comBan.length ;  i++){
+            if (comBan[i] == true) {
+                zeroCnt++;
+            }
+        }
 
 
 
-
-    public ArrayList<Integer> processComBet(int token , int round){
 
         findNum(0 , token);
-        ArrayList<Integer> pick = randomPickNum(token , round);
+        ComBetResult comBetTuple = randomPickNum(token , round );
 
 
         //쓰레드로 구현??
-        return pick;
+        return comBetTuple;
     }
 
 
-    static private ArrayList<Integer> randomPickNum(int token , int round) {
+    static private ComBetResult randomPickNum(int token , int round ) {
 
         ArrayList<ArrayList<Integer>> zeroGroup = new ArrayList<ArrayList<Integer>>();
         ArrayList<ArrayList<Integer>> etcGroup = new ArrayList<ArrayList<Integer>>();
@@ -56,7 +68,7 @@ public class ComBetService {
             if (ranNum < zeroChance) {
                 int randomIndex = random.nextInt(zeroGroup.size());
                 comSub = zeroGroup.get(randomIndex);
-                valCheck = validateSub(comSub);
+                valCheck = validateSub(comSub );
             } else {
                 int randomIndex = random.nextInt(etcGroup.size());
                 comSub = etcGroup.get(randomIndex);
@@ -65,12 +77,12 @@ public class ComBetService {
 
         }
 
-        return comSub;
+        return new ComBetResult(comSub , banArr);
 
 
     }
 
-    private static boolean validateSub(ArrayList<Integer> comSub) {
+    private static boolean validateSub(ArrayList<Integer> comSub ) {
         boolean vRst = false;
         boolean[] tempBan = banArr.clone();
         int tempZeroCnt = zeroCnt;
@@ -94,7 +106,6 @@ public class ComBetService {
             banArr = tempBan;
             zeroCnt = tempZeroCnt;
         }
-
         return vRst;
     }
 

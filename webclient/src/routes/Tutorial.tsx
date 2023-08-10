@@ -77,13 +77,7 @@ const initialPost = {
   score3Submit: "1",
   status: "EQUAL",
 };
-// export interface BanListType  {
 
-// };
-
-// const initialBanList = {
-
-// };
 
 export default function Tutorial() {
   const [SubmitInfo, setForm] = useState<SubmitType>(initialFormState);
@@ -124,10 +118,11 @@ export default function Tutorial() {
         console.log("apiResult : ", postData);
         setInfo((obj) => ({
           ...obj,
-          round: postData.round,
-          status: postData.status,
-          totalScore: postData.totalScore,
-          totalToken: postData.totalToken,
+          round: postData[0].round,
+          status: postData[0].status,
+          totalScore: postData[0].totalScore,
+          totalToken: postData[0].totalToken,
+          token : postData[0].totalToken-3,
         }));
         setForm((obj) => ({
           ...obj,

@@ -1,5 +1,6 @@
 package com.example.minigame.service;
 
+import com.example.minigame.repository.ComBetResult;
 import com.example.minigame.service.ComBetService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,11 +44,11 @@ public class ServiceTest {
 
         //when(테스트실행)
         int token = 10;
-        ArrayList<Integer> resultAction =  comBetService.processComBet(token);
-
-        System.out.println(resultAction);
-
-        assertThat(resultAction.size()).isEqualTo(3);
+        int round = 1;
+        boolean[] comBan = {false ,false ,false};
+        ComBetResult resultAction =  comBetService.processComBet(token,round , comBan);
+        System.out.println(resultAction.getPick());
+        assertThat(resultAction.getPick().size()).isEqualTo(3);
 
 
     }
