@@ -1,5 +1,6 @@
 package com.example.minigame.controller;
 
+import com.example.minigame.repository.ComBetResult;
 import com.example.minigame.service.AfterCalService;
 import com.example.minigame.service.ComBetService;
 import com.example.minigame.service.ResultCalculService;
@@ -43,7 +44,6 @@ public class BetController {
     public ResponseEntity<LinkedList<GameUser>> betting(@RequestBody LinkedList<GameUser> gameUserList)
     {
 
-        log.info("!!!!!!!");
         int roundNum = gameUserList.get(0).getRound();
 
         gameUserList = resultCalculService.calLev1(gameUserList);
@@ -59,7 +59,7 @@ public class BetController {
     }
 
     @PostMapping("/betting/tutorial")
-    public ResponseEntity<GameUser> bettingComputer(@RequestBody GameUser gameUser)
+    public ResponseEntity<LinkedList<GameUser>> bettingComputer(@RequestBody GameUser gameUser)
     {
 
         GameUser comUser = new GameUser();
@@ -69,10 +69,20 @@ public class BetController {
         int comToken = 20-gameUser.getTotalToken();
         comUser.setTotalToken(comToken);
 
+        boolean[] comBan = gameUser.getBanList()[1];
+
+
         log.info(gameUser.getScore1Submit()+ " , " + gameUser.getScore2Submit()+ "," +gameUser.getScore3Submit());
 
-        ArrayList<Integer> comSubmit = combetService.processComBet(comToken , roundNum);
-        log.info(String.valueOf(comSubmit));
+        ComBetResult comBet = combetService.processComBet(comToken , roundNum ,comBan);
+
+        ArrayList<Integer> comSubmit = comBet.getPick();
+        comBan = comBet.getBanArr();
+        log.info(String.valueOf(comBet.getPick()));
+
+        boolean[][] gameUserBanList = gameUser.getBanList();
+        gameUserBanList[1] = comBan ;
+        gameUser.setBanList(gameUserBanList);
 
         comUser.setScore1Submit(comSubmit.get(0));
         comUser.setScore2Submit(comSubmit.get(1));
@@ -82,15 +92,12 @@ public class BetController {
         gameUserList.add(gameUser);
         gameUserList.add(comUser);
         gameUserList = resultCalculService.calLev1(gameUserList);
-
-
         gameUserList = resultCalculService.calLev2(gameUserList);
-
         gameUserList = resultCalculService.calLev3(gameUserList);
 
         gameUserList = afterCalService.adjustProp(gameUserList);
 
-        return new ResponseEntity<GameUser>( gameUserList.get(0) , HttpStatus.OK) ;
+        return new ResponseEntity<LinkedList<GameUser>>( gameUserList , HttpStatus.OK) ;
     }
 
 

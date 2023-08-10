@@ -9,7 +9,7 @@ public class GameUser {
     private int totalScore = 0;
     private String status = "EQUAL";
 
-    private boolean [] banList = {false, false ,false};
+    private boolean [][] banList ={ {false, false ,false} , {false,false,false}};
 
     private int score1Submit = 1;
     private int score2Submit = 1;
@@ -56,11 +56,11 @@ public class GameUser {
         this.status = status;
     }
 
-    public boolean[] getBanList() {
+    public boolean[][] getBanList() {
         return banList;
     }
 
-    public void setBanList(boolean[] banList) {
+    public void setBanList(boolean[][] banList) {
         this.banList = banList;
     }
 

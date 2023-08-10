@@ -26,7 +26,6 @@ public class ResultCalculService {
         int val1 = userList.get(0).getScore1Submit();
         int val2 = userList.get(1).getScore1Submit();
 
-        log.info(val1+" , " + val2);
         String status1 = user1.getStatus();
 
         if(val1 == 0 || val2 == 0) {
@@ -143,10 +142,8 @@ public class ResultCalculService {
         int val1 = user1.getScore2Submit();
         int val2 = user2.getScore2Submit();
 
-
-
-        boolean[] banList1 = user1.getBanList();
-        boolean[] banList2 = user2.getBanList();
+//        boolean[][] banList1 = user1.getBanList();
+//        boolean[][] banList2 = user2.getBanList();
 
         String status1 = user1.getStatus();
 
