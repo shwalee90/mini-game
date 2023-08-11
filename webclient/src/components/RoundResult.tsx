@@ -1,9 +1,17 @@
 import type { FC } from "react";
 import { Row, Col } from "antd";
+import Tutorial, { ComSubmitType, SubmitType } from "../routes/Tutorial";
+
 export type RoundResultProps = {
-  scoreResult: number;
+  score: string;
+  comSub: ComSubmitType;
+  subInfo: SubmitType;
 };
 
-export const RoundResult: FC<RoundResultProps> = ({}) => {
-  return <Col span={4}></Col>;
+const RoundResult: FC<RoundResultProps> = ({ score, subInfo, comSub }) => {
+  let resultMsg = "";
+
+  return <Col span={4}>{resultMsg}</Col>;
 };
+
+export default RoundResult;

@@ -7,10 +7,17 @@ import TimerBar from "../components/TimerBar";
 import Table from "../components/Table";
 import "../css/tableStyles.css";
 
+import ResultMemo from "../components/ResultMemo";
 import ScoreBoard from "../components/ScoreBoard";
+import RoundResult from "../components/RoundResult";
 
 export type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit" | "thisScore",
+  string
+>;
+
+export type ComSubmitType = Record<
+  "comScore1Submit" | "comScore2Submit" | "comScore3Submit",
   string
 >;
 
@@ -19,6 +26,12 @@ const initialFormState = {
   score2Submit: "1",
   score3Submit: "1",
   thisScore: "",
+};
+
+const initialComFormState = {
+  comScore1Submit: "?",
+  comScore2Submit: "?",
+  comScore3Submit: "?",
 };
 
 type errMsgType = Record<"ErrMsg", string[]>;
@@ -78,9 +91,10 @@ const initialPost = {
   status: "EQUAL",
 };
 
-
 export default function Tutorial() {
   const [SubmitInfo, setForm] = useState<SubmitType>(initialFormState);
+
+  const [ComSubmit, setComForm] = useState<ComSubmitType>(initialComFormState);
 
   const [{ ErrMsg }, setErrmsg] = useState<errMsgType>(initialErrMsg);
 
@@ -116,20 +130,53 @@ export default function Tutorial() {
       .then((res) => res.json())
       .then((postData) => {
         console.log("apiResult : ", postData);
-        setInfo((obj) => ({
-          ...obj,
-          round: postData[0].round,
-          status: postData[0].status,
-          totalScore: postData[0].totalScore,
-          totalToken: postData[0].totalToken,
-          token : postData[0].totalToken-3,
-        }));
+
         setForm((obj) => ({
           ...obj,
-          score1Submit: "1",
-          score2Submit: "1",
-          score3Submit: "1",
+          score1Submit: postData[0].score1Submit,
+          score2Submit: postData[0].score2Submit,
+          score3Submit: postData[0].score3Submit,
         }));
+
+        setComForm((obj) => ({
+          ...obj,
+          comScore1Submit: postData[1].score1Submit,
+          comScore2Submit: postData[1].score2Submit,
+          comScore3Submit: postData[1].score3Submit,
+        }));
+
+        let timer = setTimeout(() => {
+          setInfo((obj) => ({
+            ...obj,
+            round: postData[0].round,
+            status: postData[0].status,
+            totalScore: postData[0].totalScore,
+            totalToken: postData[0].totalToken,
+            token: postData[0].totalToken - 3,
+          }));
+
+          setComInfo((obj) => ({
+            ...obj,
+            round: postData[1].round,
+            status: postData[1].status,
+            totalScore: postData[1].totalScore,
+            totalToken: postData[1].totalToken,
+          }));
+
+          setForm((obj) => ({
+            ...obj,
+            score1Submit: "1",
+            score2Submit: "1",
+            score3Submit: "1",
+          }));
+
+          setComForm((obj) => ({
+            ...obj,
+            comScore1Submit: "?",
+            comScore2Submit: "?",
+            comScore3Submit: "?",
+          }));
+        }, 3000);
       })
       .catch((error) => console.log(error));
   }, [postData]);
@@ -361,7 +408,11 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score1Submit")}
                 />
               </Col>
-              {/* <RoundResult scoreResult={}></RoundResult> */}
+              <RoundResult
+                score="1"
+                subInfo={SubmitInfo}
+                comSub={ComSubmit}
+              ></RoundResult>
             </Row>
             <Row>
               <Col span={12}>
@@ -375,31 +426,12 @@ export default function Tutorial() {
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
-              <Col span={4}>
-                <p>SCORE 1 :</p>
-              </Col>
-              <Col span={4}>
-                <input
-                  type="string"
-                  name="scoreOne"
-                  className="w-full p-3 mb-4 input primary"
-                  value={SubmitInfo.score1Submit}
-                  onChange={changed("score1Submit")}
-                  onKeyDown={handleDownKey("score1Submit")}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={12}>
-                {SubmitInfo.thisScore === "score1Submit" &&
-                ErrMsg.length !== 0 ? (
-                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
-                ) : (
-                  <p></p>
-                )}
-              </Col>
-            </Row>
+            <Col span={4}>
+              <p>SCORE 1 :</p>
+            </Col>
+            <Col span={4}>
+              <p>{ComSubmit.comScore1Submit}</p>
+            </Col>
           </Col>
         </Row>
         <Row>
@@ -431,31 +463,12 @@ export default function Tutorial() {
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
-              <Col span={4}>
-                <p>SCORE 2 :</p>
-              </Col>
-              <Col span={4}>
-                <input
-                  type="string"
-                  name="scoreTwo"
-                  className="w-full p-3 mb-4 input primary"
-                  value={SubmitInfo.score2Submit}
-                  onChange={changed("score2Submit")}
-                  onKeyDown={handleDownKey("score2Submit")}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={12}>
-                {SubmitInfo.thisScore === "score2Submit" &&
-                ErrMsg.length !== 0 ? (
-                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
-                ) : (
-                  <p></p>
-                )}
-              </Col>
-            </Row>
+            <Col span={4}>
+              <p>SCORE 2 :</p>
+            </Col>
+            <Col span={4}>
+              <p>{ComSubmit.comScore2Submit}</p>
+            </Col>
           </Col>
         </Row>
         <Row>
@@ -487,34 +500,17 @@ export default function Tutorial() {
             </Row>
           </Col>
           <Col span={12}>
-            <Row>
-              <Col span={4}>
-                <p>SCORE 3 :</p>
-              </Col>
-              <Col span={4}>
-                <input
-                  type="string"
-                  name="scoreThree"
-                  className="w-full p-3 mb-4 input primary"
-                  value={SubmitInfo.score3Submit}
-                  onChange={changed("score3Submit")}
-                  onKeyDown={handleDownKey("score3Submit")}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={12}>
-                {SubmitInfo.thisScore === "score3Submit" &&
-                ErrMsg.length !== 0 ? (
-                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
-                ) : (
-                  <p></p>
-                )}
-              </Col>
-            </Row>
+            <Col span={4}>
+              <p>SCORE 3 :</p>
+            </Col>
+            <Col span={4}>
+              <p>{ComSubmit.comScore3Submit}</p>
+            </Col>
           </Col>
         </Row>
       </div>
+
+      {/* <ResultMemo></ResultMemo> */}
     </section>
   );
 }
