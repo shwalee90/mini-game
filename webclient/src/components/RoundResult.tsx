@@ -7,7 +7,12 @@ export type RoundResultProps = {
 };
 
 const RoundResult: FC<RoundResultProps> = ({ resultMsg }) => {
-  return <Col span={4}>{resultMsg}</Col>;
+  return  (<Row>
+            <Col span={12}>
+                <p>{resultMsg}</p>
+            </Col>
+           </Row>
+          )
 };
 
 export default RoundResult;

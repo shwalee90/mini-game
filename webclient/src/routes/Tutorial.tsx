@@ -10,6 +10,7 @@ import "../css/tableStyles.css";
 import ResultMemo from "../components/ResultMemo";
 import ScoreBoard from "../components/ScoreBoard";
 import RoundResult from "../components/RoundResult";
+import ErrorDisplay from "../components/ErrorDisplay";
 
 export type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit" | "thisScore" | "resultMsg",
@@ -114,6 +115,15 @@ export default function Tutorial() {
     setInfo((obj) => ({ ...obj, token: UserInfo.token - 3 }));
   }, []);
 
+ 
+  // useEffect(() => {
+  //     setZeroCnt((obj) => ({ ...obj, 
+  //       zeroCnt: BanInfo.banList[0].filter(ban => ban === true).length,
+  //       comZeroCnt : BanInfo.banList[1].filter(ban => ban === true).length}));
+  // }, [BanInfo])
+
+
+
   useEffect(() => {
     setPostData((obj) => ({
       ...obj,
@@ -158,6 +168,13 @@ export default function Tutorial() {
             totalToken: postData[0].totalToken,
             token: postData[0].totalToken - 3,
           }));
+
+          setBanList((obj) => ({
+            ...obj,
+            banList: postData[0].banList,
+            zeroCnt: [postData[0].banList[0].filter((ban:boolean) => ban ===true).length,postData[0].banList[1].filter((ban:boolean) => ban ===true).length]
+            }));
+
 
           setComInfo((obj) => ({
             ...obj,
@@ -306,7 +323,7 @@ export default function Tutorial() {
         copyBanList[0][0] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] + 1],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] ],
           banList: copyBanList,
         }));
       }
@@ -314,7 +331,7 @@ export default function Tutorial() {
         copyBanList[0][1] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] + 1],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] ],
           banList: copyBanList,
         }));
       }
@@ -322,7 +339,7 @@ export default function Tutorial() {
         copyBanList[0][2] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] + 1],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] ],
           banList: copyBanList,
         }));
       }
@@ -414,18 +431,9 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score1Submit")}
                 />
               </Col>
-              <RoundResult resultMsg={SubmitInfo.resultMsg[0]}></RoundResult>
             </Row>
-            <Row>
-              <Col span={12}>
-                {SubmitInfo.thisScore === "score1Submit" &&
-                ErrMsg.length !== 0 ? (
-                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
-                ) : (
-                  <p></p>
-                )}
-              </Col>
-            </Row>
+            <RoundResult resultMsg={SubmitInfo.resultMsg[0]}></RoundResult>
+            <ErrorDisplay errMsg={ErrMsg} score={SubmitInfo.thisScore} ></ErrorDisplay>
           </Col>
           <Col span={12}>
             <Col span={4}>
@@ -453,18 +461,9 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score2Submit")}
                 />
               </Col>
-              <RoundResult resultMsg={SubmitInfo.resultMsg[1]}></RoundResult>
             </Row>
-            <Row>
-              <Col span={12}>
-                {SubmitInfo.thisScore === "score2Submit" &&
-                ErrMsg.length !== 0 ? (
-                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
-                ) : (
-                  <p></p>
-                )}
-              </Col>
-            </Row>
+            <RoundResult resultMsg={SubmitInfo.resultMsg[1]}></RoundResult>
+            <ErrorDisplay errMsg={ErrMsg} score={SubmitInfo.thisScore} ></ErrorDisplay>
           </Col>
           <Col span={12}>
             <Col span={4}>
@@ -492,18 +491,9 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score3Submit")}
                 />
               </Col>
-              <RoundResult resultMsg={SubmitInfo.resultMsg[2]}></RoundResult>
             </Row>
-            <Row>
-              <Col span={12}>
-                {SubmitInfo.thisScore === "score3Submit" &&
-                ErrMsg.length !== 0 ? (
-                  ErrMsg.map((errMsg, index) => <p key={index}>{errMsg}</p>)
-                ) : (
-                  <p></p>
-                )}
-              </Col>
-            </Row>
+            <RoundResult resultMsg={SubmitInfo.resultMsg[2]}></RoundResult>
+            <ErrorDisplay errMsg={ErrMsg} score={SubmitInfo.thisScore} ></ErrorDisplay>
           </Col>
           <Col span={12}>
             <Col span={4}>
