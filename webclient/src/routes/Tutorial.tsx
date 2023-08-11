@@ -12,12 +12,12 @@ import ScoreBoard from "../components/ScoreBoard";
 import RoundResult from "../components/RoundResult";
 
 export type SubmitType = Record<
-  "score1Submit" | "score2Submit" | "score3Submit" | "thisScore",
+  "score1Submit" | "score2Submit" | "score3Submit" | "thisScore" | "resultMsg",
   string
 >;
 
 export type ComSubmitType = Record<
-  "comScore1Submit" | "comScore2Submit" | "comScore3Submit",
+  "comScore1Submit" | "comScore2Submit" | "comScore3Submit" | "resultMsg",
   string
 >;
 
@@ -25,6 +25,7 @@ const initialFormState = {
   score1Submit: "1",
   score2Submit: "1",
   score3Submit: "1",
+  resultMsg: "",
   thisScore: "",
 };
 
@@ -32,6 +33,7 @@ const initialComFormState = {
   comScore1Submit: "?",
   comScore2Submit: "?",
   comScore3Submit: "?",
+  resultMsg: "",
 };
 
 type errMsgType = Record<"ErrMsg", string[]>;
@@ -136,6 +138,7 @@ export default function Tutorial() {
           score1Submit: postData[0].score1Submit,
           score2Submit: postData[0].score2Submit,
           score3Submit: postData[0].score3Submit,
+          resultMsg: postData[0].resultMsg,
         }));
 
         setComForm((obj) => ({
@@ -143,6 +146,7 @@ export default function Tutorial() {
           comScore1Submit: postData[1].score1Submit,
           comScore2Submit: postData[1].score2Submit,
           comScore3Submit: postData[1].score3Submit,
+          resultMsg: postData[0].resultMsg,
         }));
 
         let timer = setTimeout(() => {
@@ -168,6 +172,7 @@ export default function Tutorial() {
             score1Submit: "1",
             score2Submit: "1",
             score3Submit: "1",
+            resultMsg: "",
           }));
 
           setComForm((obj) => ({
@@ -175,6 +180,7 @@ export default function Tutorial() {
             comScore1Submit: "?",
             comScore2Submit: "?",
             comScore3Submit: "?",
+            resultMsg: "",
           }));
         }, 3000);
       })
@@ -408,11 +414,7 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score1Submit")}
                 />
               </Col>
-              <RoundResult
-                score="1"
-                subInfo={SubmitInfo}
-                comSub={ComSubmit}
-              ></RoundResult>
+              <RoundResult resultMsg={SubmitInfo.resultMsg[0]}></RoundResult>
             </Row>
             <Row>
               <Col span={12}>
@@ -432,6 +434,7 @@ export default function Tutorial() {
             <Col span={4}>
               <p>{ComSubmit.comScore1Submit}</p>
             </Col>
+            <RoundResult resultMsg={ComSubmit.resultMsg[0]}></RoundResult>
           </Col>
         </Row>
         <Row>
@@ -450,6 +453,7 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score2Submit")}
                 />
               </Col>
+              <RoundResult resultMsg={SubmitInfo.resultMsg[1]}></RoundResult>
             </Row>
             <Row>
               <Col span={12}>
@@ -469,6 +473,7 @@ export default function Tutorial() {
             <Col span={4}>
               <p>{ComSubmit.comScore2Submit}</p>
             </Col>
+            <RoundResult resultMsg={ComSubmit.resultMsg[1]}></RoundResult>
           </Col>
         </Row>
         <Row>
@@ -487,6 +492,7 @@ export default function Tutorial() {
                   onKeyDown={handleDownKey("score3Submit")}
                 />
               </Col>
+              <RoundResult resultMsg={SubmitInfo.resultMsg[2]}></RoundResult>
             </Row>
             <Row>
               <Col span={12}>
@@ -506,6 +512,7 @@ export default function Tutorial() {
             <Col span={4}>
               <p>{ComSubmit.comScore3Submit}</p>
             </Col>
+            <RoundResult resultMsg={ComSubmit.resultMsg[2]}></RoundResult>
           </Col>
         </Row>
       </div>

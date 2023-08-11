@@ -9,7 +9,7 @@ public class GameUser {
     private int totalScore = 0;
     private String status = "EQUAL";
 
-    private String resultMsg[] ;
+    private String resultMsg[] = {"" , "" , ""} ;
 
     public String[] getResultMsg() {
         return resultMsg;

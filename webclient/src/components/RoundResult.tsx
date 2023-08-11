@@ -3,14 +3,10 @@ import { Row, Col } from "antd";
 import Tutorial, { ComSubmitType, SubmitType } from "../routes/Tutorial";
 
 export type RoundResultProps = {
-  score: string;
-  comSub: ComSubmitType;
-  subInfo: SubmitType;
+  resultMsg: string;
 };
 
-const RoundResult: FC<RoundResultProps> = ({ score, subInfo, comSub }) => {
-  let resultMsg = "";
-
+const RoundResult: FC<RoundResultProps> = ({ resultMsg }) => {
   return <Col span={4}>{resultMsg}</Col>;
 };
 
