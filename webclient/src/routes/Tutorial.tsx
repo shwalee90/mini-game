@@ -6,11 +6,10 @@ import { Row, Col } from "antd";
 import TimerBar from "../components/TimerBar";
 import Table from "../components/Table";
 import "../css/tableStyles.css";
-
-import ResultMemo from "../components/ResultMemo";
 import ScoreBoard from "../components/ScoreBoard";
 import RoundResult from "../components/RoundResult";
 import ErrorDisplay from "../components/ErrorDisplay";
+import RoundMemo from "../components/RoundMemo";
 
 export type SubmitType = Record<
   "score1Submit" | "score2Submit" | "score3Submit" | "thisScore" | "resultMsg",
@@ -56,6 +55,20 @@ export type ComInfoType = {
   totalScore: number;
   totalToken: number;
 };
+
+export type ResultMemoType = {
+  endRound : number;
+  resultMemo : number[][];
+  comResultMemo : number[][];
+}
+
+const initialResultMemo = {
+  endRound : 0,
+  resultMemo : [[0,0,0],[0,0,0],[0,0,0]],
+  comResultMemo : [[0,0,0],[0,0,0],[0,0,0]],
+}
+
+
 
 export type BanInfoType = {
   // banScore1: boolean;
@@ -107,6 +120,7 @@ export default function Tutorial() {
 
   const [ComInfo, setComInfo] = useState<ComInfoType>(initialInfoState);
 
+  const [ResultMemo, setResultMemo] = useState<ResultMemoType>(initialResultMemo);
   const [postData, setPostData] = useState<
     UserInfoType | BanInfoType | SubmitType
   >(initialPost);
@@ -160,6 +174,22 @@ export default function Tutorial() {
         }));
 
         let timer = setTimeout(() => {
+          
+          let resultArr = [postData[0].score1Submit , postData[0].score2Submit , postData[0].score3Submit]
+          let comRstArr = [ postData[1].score1Submit , postData[1].score1Submit , postData[1].score1Submit]
+
+          let tempResult = ResultMemo.resultMemo
+          let comTempResult = ResultMemo.comResultMemo
+          tempResult[UserInfo.round-1] = resultArr;
+          comTempResult[UserInfo.round-1] = comRstArr;
+
+          setResultMemo((obj)=>({
+            ...obj,
+            endRound : UserInfo.round,
+            resultMemo: tempResult ,
+            comResultMemo : comTempResult,
+          }));
+          
           setInfo((obj) => ({
             ...obj,
             round: postData[0].round,
@@ -507,7 +537,7 @@ export default function Tutorial() {
         </Row>
       </div>
 
-      {/* <ResultMemo></ResultMemo> */}
+      <RoundMemo scoreResult={ResultMemo}></RoundMemo> 
     </section>
   );
 }
