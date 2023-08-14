@@ -10,16 +10,23 @@ import ScoreBoard from "../components/ScoreBoard";
 import RoundResult from "../components/RoundResult";
 import ErrorDisplay from "../components/ErrorDisplay";
 import RoundMemo from "../components/RoundMemo";
+import { isDisabled } from "@testing-library/user-event/dist/utils";
 
-export type SubmitType = Record<
-  "score1Submit" | "score2Submit" | "score3Submit" | "thisScore" | "resultMsg",
-  string
->;
+export type SubmitType = {
+  score1Submit: string;
+  score2Submit: string;
+  score3Submit: string;
+  thisScore: string;
+  resultMsg: string;
+  formDisalbed: boolean;
+};
 
-export type ComSubmitType = Record<
-  "comScore1Submit" | "comScore2Submit" | "comScore3Submit" | "resultMsg",
-  string
->;
+export type ComSubmitType = {
+  comScore1Submit: string;
+  comScore2Submit: string;
+  comScore3Submit: string;
+  resultMsg: string;
+};
 
 const initialFormState = {
   score1Submit: "1",
@@ -27,6 +34,7 @@ const initialFormState = {
   score3Submit: "1",
   resultMsg: "",
   thisScore: "",
+  formDisalbed: false,
 };
 
 const initialComFormState = {
@@ -57,18 +65,26 @@ export type ComInfoType = {
 };
 
 export type ResultMemoType = {
-  endRound : number;
-  resultMemo : number[][];
-  comResultMemo : number[][];
-}
+  endRound: number;
+  thisRoundResult: number[];
+  resultMemo: number[][];
+  comResultMemo: number[][];
+};
 
 const initialResultMemo = {
-  endRound : 0,
-  resultMemo : [[0,0,0],[0,0,0],[0,0,0]],
-  comResultMemo : [[0,0,0],[0,0,0],[0,0,0]],
-}
-
-
+  endRound: 0,
+  thisRoundResult: [0, 0],
+  resultMemo: [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+  comResultMemo: [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ],
+};
 
 export type BanInfoType = {
   // banScore1: boolean;
@@ -120,7 +136,8 @@ export default function Tutorial() {
 
   const [ComInfo, setComInfo] = useState<ComInfoType>(initialInfoState);
 
-  const [ResultMemo, setResultMemo] = useState<ResultMemoType>(initialResultMemo);
+  const [ResultMemo, setResultMemo] =
+    useState<ResultMemoType>(initialResultMemo);
   const [postData, setPostData] = useState<
     UserInfoType | BanInfoType | SubmitType
   >(initialPost);
@@ -129,14 +146,11 @@ export default function Tutorial() {
     setInfo((obj) => ({ ...obj, token: UserInfo.token - 3 }));
   }, []);
 
- 
   // useEffect(() => {
-  //     setZeroCnt((obj) => ({ ...obj, 
+  //     setZeroCnt((obj) => ({ ...obj,
   //       zeroCnt: BanInfo.banList[0].filter(ban => ban === true).length,
   //       comZeroCnt : BanInfo.banList[1].filter(ban => ban === true).length}));
   // }, [BanInfo])
-
-
 
   useEffect(() => {
     setPostData((obj) => ({
@@ -151,11 +165,15 @@ export default function Tutorial() {
     }));
   }, [UserInfo, BanInfo, SubmitInfo]);
 
+  let apiTemp = new Object();
+
   const postTest = useCallback(() => {
     post("/betting/tutorial", postData)
       .then((res) => res.json())
       .then((postData) => {
         console.log("apiResult : ", postData);
+
+        apiTemp = postData;
 
         setForm((obj) => ({
           ...obj,
@@ -163,6 +181,7 @@ export default function Tutorial() {
           score2Submit: postData[0].score2Submit,
           score3Submit: postData[0].score3Submit,
           resultMsg: postData[0].resultMsg,
+          formDisalbed: true,
         }));
 
         setComForm((obj) => ({
@@ -170,69 +189,82 @@ export default function Tutorial() {
           comScore1Submit: postData[1].score1Submit,
           comScore2Submit: postData[1].score2Submit,
           comScore3Submit: postData[1].score3Submit,
-          resultMsg: postData[0].resultMsg,
+          resultMsg: postData[1].resultMsg,
         }));
 
-        let timer = setTimeout(() => {
-          
-          let resultArr = [postData[0].score1Submit , postData[0].score2Submit , postData[0].score3Submit]
-          let comRstArr = [ postData[1].score1Submit , postData[1].score1Submit , postData[1].score1Submit]
-
-          let tempResult = ResultMemo.resultMemo
-          let comTempResult = ResultMemo.comResultMemo
-          tempResult[UserInfo.round-1] = resultArr;
-          comTempResult[UserInfo.round-1] = comRstArr;
-
-          setResultMemo((obj)=>({
-            ...obj,
-            endRound : UserInfo.round,
-            resultMemo: tempResult ,
-            comResultMemo : comTempResult,
-          }));
-          
-          setInfo((obj) => ({
-            ...obj,
-            round: postData[0].round,
-            status: postData[0].status,
-            totalScore: postData[0].totalScore,
-            totalToken: postData[0].totalToken,
-            token: postData[0].totalToken - 3,
-          }));
-
-          setBanList((obj) => ({
-            ...obj,
-            banList: postData[0].banList,
-            zeroCnt: [postData[0].banList[0].filter((ban:boolean) => ban ===true).length,postData[0].banList[1].filter((ban:boolean) => ban ===true).length]
-            }));
-
-
-          setComInfo((obj) => ({
-            ...obj,
-            round: postData[1].round,
-            status: postData[1].status,
-            totalScore: postData[1].totalScore,
-            totalToken: postData[1].totalToken,
-          }));
-
-          setForm((obj) => ({
-            ...obj,
-            score1Submit: "1",
-            score2Submit: "1",
-            score3Submit: "1",
-            resultMsg: "",
-          }));
-
-          setComForm((obj) => ({
-            ...obj,
-            comScore1Submit: "?",
-            comScore2Submit: "?",
-            comScore3Submit: "?",
-            resultMsg: "",
-          }));
-        }, 3000);
+        nextRound(apiTemp);
       })
       .catch((error) => console.log(error));
   }, [postData]);
+
+  let nextRound = useCallback((apiTemp: any) => {
+    let resultArr = [
+      apiTemp[0].score1Submit,
+      apiTemp[0].score2Submit,
+      apiTemp[0].score3Submit,
+    ];
+    let comRstArr = [
+      apiTemp[1].score1Submit,
+      apiTemp[1].score2Submit,
+      apiTemp[1].score3Submit,
+    ];
+
+    let tempResult = ResultMemo.resultMemo;
+    let comTempResult = ResultMemo.comResultMemo;
+    tempResult[UserInfo.round - 1] = resultArr;
+    comTempResult[UserInfo.round - 1] = comRstArr;
+
+    setResultMemo((obj) => ({
+      ...obj,
+      endRound: UserInfo.round,
+      thisRoundResult: [apiTemp[0].thisRoundScore, apiTemp[1].thisRoundScore],
+      resultMemo: tempResult,
+      comResultMemo: comTempResult,
+    }));
+
+    setInfo((obj) => ({
+      ...obj,
+      round: apiTemp[0].round,
+      status: apiTemp[0].status,
+      totalScore: apiTemp[0].totalScore,
+      totalToken: apiTemp[0].totalToken,
+      token: apiTemp[0].totalToken - 3,
+    }));
+
+    setBanList((obj) => ({
+      ...obj,
+      banList: apiTemp[0].banList,
+      zeroCnt: [
+        apiTemp[0].banList[0].filter((ban: boolean) => ban === true).length,
+        apiTemp[0].banList[1].filter((ban: boolean) => ban === true).length,
+      ],
+    }));
+
+    setComInfo((obj) => ({
+      ...obj,
+      round: apiTemp[1].round,
+      status: apiTemp[1].status,
+      totalScore: apiTemp[1].totalScore,
+      totalToken: apiTemp[1].totalToken,
+    }));
+
+    setForm((obj) => ({
+      ...obj,
+      score1Submit: "1",
+      score2Submit: "1",
+      score3Submit: "1",
+      resultMsg: "",
+      formDisalbed: false,
+    }));
+
+    setComForm((obj) => ({
+      ...obj,
+      comScore1Submit: "?",
+      comScore2Submit: "?",
+      comScore3Submit: "?",
+      resultMsg: "",
+    }));
+  }, []);
 
   const calRemain = (
     num: string,
@@ -353,7 +385,7 @@ export default function Tutorial() {
         copyBanList[0][0] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] ],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1]],
           banList: copyBanList,
         }));
       }
@@ -361,7 +393,7 @@ export default function Tutorial() {
         copyBanList[0][1] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] ],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1]],
           banList: copyBanList,
         }));
       }
@@ -369,7 +401,7 @@ export default function Tutorial() {
         copyBanList[0][2] = true;
         setBanList((obj) => ({
           ...obj,
-          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1] ],
+          zeroCnt: [BanInfo.zeroCnt[0] + 1, BanInfo.zeroCnt[1]],
           banList: copyBanList,
         }));
       }
@@ -459,11 +491,14 @@ export default function Tutorial() {
                   value={SubmitInfo.score1Submit}
                   onChange={changed("score1Submit")}
                   onKeyDown={handleDownKey("score1Submit")}
+                  disabled={SubmitInfo.formDisalbed}
                 />
               </Col>
             </Row>
             <RoundResult resultMsg={SubmitInfo.resultMsg[0]}></RoundResult>
-            <ErrorDisplay errMsg={ErrMsg} score={SubmitInfo.thisScore} ></ErrorDisplay>
+            {SubmitInfo.thisScore == "score1Submit" && ErrMsg.length !== 0 ? (
+              <ErrorDisplay errMsg={ErrMsg}></ErrorDisplay>
+            ) : null}
           </Col>
           <Col span={12}>
             <Col span={4}>
@@ -489,11 +524,14 @@ export default function Tutorial() {
                   value={SubmitInfo.score2Submit}
                   onChange={changed("score2Submit")}
                   onKeyDown={handleDownKey("score2Submit")}
+                  disabled={SubmitInfo.formDisalbed}
                 />
               </Col>
             </Row>
             <RoundResult resultMsg={SubmitInfo.resultMsg[1]}></RoundResult>
-            <ErrorDisplay errMsg={ErrMsg} score={SubmitInfo.thisScore} ></ErrorDisplay>
+            {SubmitInfo.thisScore === "score2Submit" && ErrMsg.length !== 0 ? (
+              <ErrorDisplay errMsg={ErrMsg}></ErrorDisplay>
+            ) : null}
           </Col>
           <Col span={12}>
             <Col span={4}>
@@ -519,11 +557,14 @@ export default function Tutorial() {
                   value={SubmitInfo.score3Submit}
                   onChange={changed("score3Submit")}
                   onKeyDown={handleDownKey("score3Submit")}
+                  disabled={SubmitInfo.formDisalbed}
                 />
               </Col>
             </Row>
             <RoundResult resultMsg={SubmitInfo.resultMsg[2]}></RoundResult>
-            <ErrorDisplay errMsg={ErrMsg} score={SubmitInfo.thisScore} ></ErrorDisplay>
+            {SubmitInfo.thisScore == "score3Submit" && ErrMsg.length !== 0 ? (
+              <ErrorDisplay errMsg={ErrMsg}></ErrorDisplay>
+            ) : null}
           </Col>
           <Col span={12}>
             <Col span={4}>
@@ -537,7 +578,7 @@ export default function Tutorial() {
         </Row>
       </div>
 
-      <RoundMemo scoreResult={ResultMemo}></RoundMemo> 
+      <RoundMemo scoreResult={ResultMemo}></RoundMemo>
     </section>
   );
 }

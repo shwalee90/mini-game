@@ -6,13 +6,32 @@ export type RoundResultProps = {
   resultMsg: string;
 };
 
+type WinLoseType = (x: string) => boolean;
+
 const RoundResult: FC<RoundResultProps> = ({ resultMsg }) => {
-  return  (<Row>
-            <Col span={12}>
-                <p>{resultMsg}</p>
-            </Col>
-           </Row>
-          )
+  var str = resultMsg || "";
+
+  const winLose: WinLoseType = (str: string) => {
+    if (str == "") {
+      return true;
+    } else {
+      if (str.substring(0, 2) == "+0") {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
+  return (
+    <Row>
+      {winLose(str) ? (
+        <p>{resultMsg}</p>
+      ) : (
+        <p className="text-lime-500">{resultMsg}</p>
+      )}
+    </Row>
+  );
 };
 
 export default RoundResult;

@@ -66,13 +66,13 @@ public class ResultCalculService {
             if(status1.equals("WINNER")){
                 if(val1 > val2){
 
-                    rstMsg1[0] =  "+ 1 "   + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
-                    rstMsg2[0] =  "+ 0 "   ;
+                    rstMsg1[0] =  "+1 "   + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
+                    rstMsg2[0] =  "+0 "   ;
 
                     if(val1 > val2 + 1 ){
                         thisScore = thisScore*2;
-                        rstMsg1[0] =  "+ 1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
-                        rstMsg2[0] =  "+ 0 "   ;
+                        rstMsg1[0] =  "+1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
+                        rstMsg2[0] =  "+0 "   ;
                     }
                     user1.setThisRoundScore(user1.getThisRoundScore() + thisScore);
 
@@ -86,13 +86,13 @@ public class ResultCalculService {
 
                 if(val1 < val2){
 
-                    rstMsg1[0] =  "+ 0 "  ;
-                    rstMsg2[0] =  "+ 1 "   + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
+                    rstMsg1[0] =  "+0 "  ;
+                    rstMsg2[0] =  "+1 "   + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
 
                     if(val2 > val1 + 1){
                         thisScore = thisScore*2;
-                        rstMsg1[0] =  "+ 0 "   ;
-                        rstMsg2[0] =  "+ 1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
+                        rstMsg1[0] =  "+0 "   ;
+                        rstMsg2[0] =  "+1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
 
                     }
                     user2.setThisRoundScore(user2.getThisRoundScore()+thisScore);
@@ -121,12 +121,12 @@ public class ResultCalculService {
 
             if(status1.equals("EQUAL")){
                 if(val1 > val2){
-                    rstMsg1[0] =  "+ 1 "  + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
-                    rstMsg2[0] =  "+ 0 "  ;
+                    rstMsg1[0] =  "+1 "  + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
+                    rstMsg2[0] =  "+0 "  ;
                     if(val1 > val2 +1 ){
                         thisScore = thisScore*2;
-                        rstMsg1[0] = "+ 1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
-                        rstMsg2[0] = "+ 0 "   ;
+                        rstMsg1[0] = "+1 X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
+                        rstMsg2[0] = "+0 "   ;
                     }
                     user1.setThisRoundScore(user1.getThisRoundScore() + thisScore);
                     user2.setResultMsg(rstMsg2);
@@ -138,12 +138,12 @@ public class ResultCalculService {
                     return guList;
                 }
                 if(val1 < val2){
-                    rstMsg1[0] =  "+ 0 "  ;
-                    rstMsg2[0] =  "+ 1 "  + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
+                    rstMsg1[0] =  "+0 "  ;
+                    rstMsg2[0] =  "+1 "  + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
                     if(val2 > val1 +1 ){
                         thisScore = thisScore*2;
-                        rstMsg1[0] = "+ 0 "   ;
-                        rstMsg2[0] = "+ 1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
+                        rstMsg1[0] = "+0 "   ;
+                        rstMsg2[0] = "+1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
                     }
                     user2.setThisRoundScore(user2.getThisRoundScore()+thisScore);
                     user1.setResultMsg(rstMsg1);
@@ -155,8 +155,8 @@ public class ResultCalculService {
                     return guList;
                 }
                 if(val1== val2){
-                    rstMsg1[0] =  "+ 0 (EQUAL 상태) 같은 숫자 배팅"  ;
-                    rstMsg2[0] =  "+ 0 (EQUAL 상태) 같은 숫자 배팅"  ;
+                    rstMsg1[0] =  "+0 (EQUAL 상태) 같은 숫자 배팅"  ;
+                    rstMsg2[0] =  "+0 (EQUAL 상태) 같은 숫자 배팅"  ;
                     user1.setResultMsg(rstMsg1);
                     user2.setResultMsg(rstMsg2);
 
@@ -169,13 +169,13 @@ public class ResultCalculService {
             if(status1.equals("LOSER")){
                 if(val1 > val2){
 
-                    rstMsg1[0] =  "+ 1 "  + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
-                    rstMsg2[0] =  "+ 0 "  ;
+                    rstMsg1[0] =  "+1 "  + "(SCORE1 승리 조건) 상대보다 클 때 득점 " ;
+                    rstMsg2[0] =  "+0 "  ;
 
                     if(val1 > val2 + 1){
                         thisScore = thisScore*2;
-                        rstMsg1[0] = "+ 1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
-                        rstMsg2[0] = "+ 0 "   ;
+                        rstMsg1[0] = "+1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
+                        rstMsg2[0] = "+0 "   ;
                     }
                     user1.setThisRoundScore(user1.getThisRoundScore() + thisScore);
                     user1.setResultMsg(rstMsg1);
@@ -185,12 +185,12 @@ public class ResultCalculService {
                     return guList;
                 }
                 if(val1 < val2){
-                    rstMsg1[0] =  "+ 0 "  ;
-                    rstMsg2[0] =  "+ 1 " + "(SCORE1 승리 조건) 상대보다 클 때 득점 "  ;
+                    rstMsg1[0] =  "+0 "  ;
+                    rstMsg2[0] =  "+1 " + "(SCORE1 승리 조건) 상대보다 클 때 득점 "  ;
                     if(val2 > val1 + 1){
                         thisScore = thisScore*2;
-                        rstMsg1[0] = "+ 0 "   ;
-                        rstMsg2[0] = "+ 1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
+                        rstMsg1[0] = "+0 "   ;
+                        rstMsg2[0] = "+1  X 2 " + "  (SCORE1 x2 조건) 상대보다 2 이상 클 때 두배 점수 " ;
                     }
                     user2.setThisRoundScore(user2.getThisRoundScore()+thisScore);
                     user1.setResultMsg(rstMsg1);
@@ -351,8 +351,8 @@ public class ResultCalculService {
                     return guList;
                 }
                 if(val1== val2){
-                    rstMsg1[1] =  "+ 0 (EQUAL 상태) 같은 숫자 배팅"  ;
-                    rstMsg2[1] =  "+ 0 (EQUAL 상태) 같은 숫자 배팅"  ;
+                    rstMsg1[1] =  "+0 (EQUAL 상태) 같은 숫자 배팅"  ;
+                    rstMsg2[1] =  "+0 (EQUAL 상태) 같은 숫자 배팅"  ;
                     user1.setResultMsg(rstMsg1);
                     user2.setResultMsg(rstMsg2);
 
@@ -552,8 +552,8 @@ public class ResultCalculService {
                     return guList;
                 }
                 if(val1== val2){
-                    rstMsg1[2] =  "+ 0 (EQUAL 상태) 같은 숫자 배팅"  ;
-                    rstMsg2[2] =  "+ 0 (EQUAL 상태) 같은 숫자 배팅"  ;
+                    rstMsg1[2] =  "+0 (EQUAL 상태) 같은 숫자 배팅"  ;
+                    rstMsg2[2] =  "+0 (EQUAL 상태) 같은 숫자 배팅"  ;
                     user1.setResultMsg(rstMsg1);
                     user2.setResultMsg(rstMsg2);
 
