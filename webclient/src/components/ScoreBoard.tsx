@@ -146,7 +146,7 @@ const ScoreBoard: FC<ScoreBoardProps> = ({
         </Col>
       </Row>
 
-      <div>
+      <div className="my-3">
         <ProgressBar
           bgColor="blue"
           width="100%"

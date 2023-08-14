@@ -1,16 +1,35 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, MouseEventHandler } from "react";
 import { useState, useCallback, useEffect } from "react";
 import { post } from "../server";
-import ProgressBar from "@ramonak/react-progress-bar";
 import { Row, Col } from "antd";
-import TimerBar from "../components/TimerBar";
-import Table from "../components/Table";
+import { Button, Icon } from "../theme/daisyui";
 import "../css/tableStyles.css";
 import ScoreBoard from "../components/ScoreBoard";
 import RoundResult from "../components/RoundResult";
 import ErrorDisplay from "../components/ErrorDisplay";
 import RoundMemo from "../components/RoundMemo";
-import { isDisabled } from "@testing-library/user-event/dist/utils";
+
+interface MouseEvent<T = Element>  {
+  altKey: boolean;
+  button: number;
+  buttons: number;
+  clientX: number;
+  clientY: number;
+  ctrlKey: boolean;
+  /**
+   * See [DOM Level 3 Events spec](https://www.w3.org/TR/uievents-key/#keys-modifier). for a list of valid (case-sensitive) arguments to this method.
+   */
+  getModifierState(key: string): boolean;
+  metaKey: boolean;
+  movementX: number;
+  movementY: number;
+  pageX: number;
+  pageY: number;
+  relatedTarget: EventTarget | null;
+  screenX: number;
+  screenY: number;
+  shiftKey: boolean;
+}
 
 export type SubmitType = {
   score1Submit: string;
@@ -192,13 +211,17 @@ export default function Tutorial() {
           resultMsg: postData[1].resultMsg,
         }));
 
-        nextRound(apiTemp);
       })
       .catch((error) => console.log(error));
   }, [postData]);
 
-  let nextRound = useCallback((apiTemp: any) => {
-    let resultArr = [
+
+
+  const nextRound =
+    (apiTemp? : any) => (e:MouseEvent<HTMLButtonElement>) =>{
+      console.log(apiTemp)
+
+      let resultArr = [
       apiTemp[0].score1Submit,
       apiTemp[0].score2Submit,
       apiTemp[0].score3Submit,
@@ -264,7 +287,7 @@ export default function Tutorial() {
       comScore3Submit: "?",
       resultMsg: "",
     }));
-  }, []);
+  } ;
 
   const calRemain = (
     num: string,
@@ -496,7 +519,7 @@ export default function Tutorial() {
               </Col>
             </Row>
             <RoundResult resultMsg={SubmitInfo.resultMsg[0]}></RoundResult>
-            {SubmitInfo.thisScore == "score1Submit" && ErrMsg.length !== 0 ? (
+            {SubmitInfo.thisScore === "score1Submit" && ErrMsg.length !== 0 ? (
               <ErrorDisplay errMsg={ErrMsg}></ErrorDisplay>
             ) : null}
           </Col>
@@ -562,7 +585,7 @@ export default function Tutorial() {
               </Col>
             </Row>
             <RoundResult resultMsg={SubmitInfo.resultMsg[2]}></RoundResult>
-            {SubmitInfo.thisScore == "score3Submit" && ErrMsg.length !== 0 ? (
+            {SubmitInfo.thisScore === "score3Submit" && ErrMsg.length !== 0 ? (
               <ErrorDisplay errMsg={ErrMsg}></ErrorDisplay>
             ) : null}
           </Col>
@@ -577,6 +600,19 @@ export default function Tutorial() {
           </Col>
         </Row>
       </div>
+
+      { SubmitInfo.formDisalbed ? (
+        <div className="flex justify-center">
+          <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded my-3"
+          onClick={nextRound(apiTemp)}>
+             다음 라운드로 이동
+          </Button>
+        </div>
+      ) : (
+        null
+      )}
+
+
 
       <RoundMemo scoreResult={ResultMemo}></RoundMemo>
     </section>
