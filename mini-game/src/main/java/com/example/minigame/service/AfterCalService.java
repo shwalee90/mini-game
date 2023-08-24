@@ -19,8 +19,6 @@ public class AfterCalService {
         int val1 = user1.getThisRoundScore();
         int val2 = user2.getThisRoundScore();
 
-        user1.setThisRoundScore(0);
-        user2.setThisRoundScore(0);
 
         user1.setTotalScore(user1.getTotalScore()+val1);
         user2.setTotalScore(user2.getTotalScore()+val2);

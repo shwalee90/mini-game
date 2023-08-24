@@ -9,6 +9,16 @@ public class GameUser {
     private int totalScore = 0;
     private String status = "EQUAL";
 
+    private String resultMsg[] = {"" , "" , ""} ;
+
+    public String[] getResultMsg() {
+        return resultMsg;
+    }
+
+    public void setResultMsg(String[] resultMsg) {
+        this.resultMsg = resultMsg;
+    }
+
     private boolean [][] banList ={ {false, false ,false} , {false,false,false}};
 
     private int score1Submit = 1;

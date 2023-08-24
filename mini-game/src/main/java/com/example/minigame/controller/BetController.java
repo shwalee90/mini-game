@@ -65,6 +65,8 @@ public class BetController {
         GameUser comUser = new GameUser();
 
 
+
+
         int roundNum = gameUser.getRound();
         int comToken = 20-gameUser.getTotalToken();
         comUser.setTotalToken(comToken);
@@ -89,6 +91,10 @@ public class BetController {
         comUser.setScore3Submit(comSubmit.get(2));
 
         LinkedList<GameUser> gameUserList = new LinkedList<>();
+
+        gameUser.setThisRoundScore(0);
+        comUser.setThisRoundScore(0);
+
         gameUserList.add(gameUser);
         gameUserList.add(comUser);
         gameUserList = resultCalculService.calLev1(gameUserList);
