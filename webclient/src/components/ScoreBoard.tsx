@@ -20,6 +20,8 @@ export type ScoreBoardProps = {
   postTest: () => void;
 };
 
+
+
 const ScoreBoard: FC<ScoreBoardProps> = ({
   UserInfo,
   BanInfo,
@@ -28,6 +30,13 @@ const ScoreBoard: FC<ScoreBoardProps> = ({
   postTest,
 }) => {
   const [count, setCount] = useState(10);
+
+  useEffect(() => {
+    
+    setCount((count) => 10);
+
+    }, [UserInfo.round]);
+  
 
   useEffect(() => {
     // 설정된 시간 간격마다 setInterval 콜백이 실행된다.

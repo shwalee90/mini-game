@@ -40,6 +40,14 @@ export type SubmitType = {
   formDisalbed: boolean;
 };
 
+
+export type RequestJsonStrType = {
+  req : string;
+}
+const initialReq ={
+  req : "",
+}
+
 export type ComSubmitType = {
   comScore1Submit: string;
   comScore2Submit: string;
@@ -155,6 +163,9 @@ export default function Tutorial() {
 
   const [ComInfo, setComInfo] = useState<ComInfoType>(initialInfoState);
 
+  const [reqInfo , setReq] = useState<RequestJsonStrType>(initialReq);
+
+
   const [ResultMemo, setResultMemo] =
     useState<ResultMemoType>(initialResultMemo);
   const [postData, setPostData] = useState<
@@ -184,15 +195,28 @@ export default function Tutorial() {
     }));
   }, [UserInfo, BanInfo, SubmitInfo]);
 
-  let apiTemp = new Object();
 
   const postTest = useCallback(() => {
     post("/betting/tutorial", postData)
       .then((res) => res.json())
       .then((postData) => {
         console.log("apiResult : ", postData);
+        
+        setReq((obj) => ({
+          ...obj,
+          req : JSON.stringify(postData)
+        }));
+        setPostData((obj) => ({
+          ...obj,
+          round: postData[0].round,
+          totalScore: UserInfo.totalScore,
+          totalToken: UserInfo.totalToken,
+          banList: BanInfo.banList,
+          score1Submit: SubmitInfo.score1Submit,
+          score2Submit: SubmitInfo.score2Submit,
+          score3Submit: SubmitInfo.score3Submit,
+        }));
 
-        apiTemp = postData;
 
         setForm((obj) => ({
           ...obj,
@@ -218,9 +242,9 @@ export default function Tutorial() {
 
 
   const nextRound =
-    (apiTemp? : any) => (e:MouseEvent<HTMLButtonElement>) =>{
-      console.log(apiTemp)
+    () => (e:MouseEvent<HTMLButtonElement>) =>{
 
+      const apiTemp = JSON.parse(reqInfo.req);
       let resultArr = [
       apiTemp[0].score1Submit,
       apiTemp[0].score2Submit,
@@ -604,7 +628,7 @@ export default function Tutorial() {
       { SubmitInfo.formDisalbed ? (
         <div className="flex justify-center">
           <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded my-3"
-          onClick={nextRound(apiTemp)}>
+          onClick={nextRound()}>
              다음 라운드로 이동
           </Button>
         </div>
