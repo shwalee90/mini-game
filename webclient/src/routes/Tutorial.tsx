@@ -196,7 +196,11 @@ export default function Tutorial() {
   }, [UserInfo, BanInfo, SubmitInfo]);
 
 
+
   const postTest = useCallback(() => {
+    
+
+
     post("/betting/tutorial", postData)
       .then((res) => res.json())
       .then((postData) => {
@@ -238,6 +242,48 @@ export default function Tutorial() {
       })
       .catch((error) => console.log(error));
   }, [postData]);
+
+  // const autoBetting = useCallback(()  => {
+  //   let token = UserInfo.token;
+  //   let sMap = new Map<string,number>()
+    
+  //   if ( Number(SubmitInfo.score1Submit) !== 0){
+  //     sMap.set('score1Submit',0)
+  //   }
+  //   if ( Number(SubmitInfo.score2Submit) !== 0){
+  //     sMap.set('score2Submit',0)
+  //   }
+  //   if ( Number(SubmitInfo.score3Submit) !== 0){
+  //     sMap.set('score3Submit',0)
+  //   }
+
+  //   let m = Math.floor(token / sMap.size)
+  //   let n = token % sMap.size
+  //   for (let item of Array.from(sMap)){
+  //     let num = m
+  //     if(n !== 0){
+  //       num = num +1
+  //       n = n-1
+  //     }
+
+  //     sMap.set(item[0], num);
+  //   }
+  //   setForm((obj) => ({
+  //     ...obj,
+  //     score1Submit: SubmitInfo.score1Submit + sMap.get('score1Submit'),
+  //     score2Submit: SubmitInfo.score2Submit + sMap.get('score2Submit'),
+  //     score3Submit: SubmitInfo.score3Submit + sMap.get('score3Submit'),
+  //   }));
+  //   },
+  //   [
+  //     SubmitInfo.score1Submit,
+  //     SubmitInfo.score2Submit,
+  //     SubmitInfo.score3Submit,
+  //   ]
+  // );
+
+
+
 
 
 
@@ -400,6 +446,7 @@ export default function Tutorial() {
     if (Number(beforeVal) === 0 && Number(num) !== 0) {
       let copyBanList = BanInfo.banList;
       if (key === "score1Submit") {
+
         copyBanList[0][0] = false;
 
         setBanList((obj) => ({
@@ -409,6 +456,7 @@ export default function Tutorial() {
         }));
       }
       if (key === "score2Submit") {
+
         copyBanList[0][1] = false;
         setBanList((obj) => ({
           ...obj,
@@ -417,6 +465,7 @@ export default function Tutorial() {
         }));
       }
       if (key === "score3Submit") {
+        
         copyBanList[0][2] = false;
         setBanList((obj) => ({
           ...obj,
@@ -429,6 +478,15 @@ export default function Tutorial() {
     if (Number(num) === 0 && Number(beforeVal) !== 0) {
       let copyBanList = BanInfo.banList;
       if (key === "score1Submit") {
+        if(copyBanList[0][0] === true){
+          errMsgList.push("score1의 0을 이미 사용하였습니다.");
+          setErrmsg((obj) => ({
+            ...obj,
+            ErrMsg: errMsgList,
+          }));
+          setForm((obj) => ({ ...obj, thisScore: key }));
+          return;
+        }
         copyBanList[0][0] = true;
         setBanList((obj) => ({
           ...obj,
@@ -437,6 +495,15 @@ export default function Tutorial() {
         }));
       }
       if (key === "score2Submit") {
+        if(copyBanList[0][1] === true){
+          errMsgList.push("score2의 0을 이미 사용하였습니다.");
+          setErrmsg((obj) => ({
+            ...obj,
+            ErrMsg: errMsgList,
+          }));
+          setForm((obj) => ({ ...obj, thisScore: key }));
+          return;
+        }
         copyBanList[0][1] = true;
         setBanList((obj) => ({
           ...obj,
@@ -445,6 +512,15 @@ export default function Tutorial() {
         }));
       }
       if (key === "score3Submit") {
+        if(copyBanList[0][2] === true){
+          errMsgList.push("score3의 0을 이미 사용하였습니다.");
+          setErrmsg((obj) => ({
+            ...obj,
+            ErrMsg: errMsgList,
+          }));
+          setForm((obj) => ({ ...obj, thisScore: key }));
+          return;
+        }
         copyBanList[0][2] = true;
         setBanList((obj) => ({
           ...obj,
