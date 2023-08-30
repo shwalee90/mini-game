@@ -30,7 +30,6 @@ const ScoreBoard: FC<ScoreBoardProps> = ({
   postTest,
 }) => {
   const [count, setCount] = useState(10);
-
   useEffect(() => {
     
     setCount((count) => 10);
@@ -48,6 +47,42 @@ const ScoreBoard: FC<ScoreBoardProps> = ({
     // 0이 되면 카운트가 멈춤
     if (count === 0) {
       clearInterval(id);
+
+      let token = UserInfo.token;
+      let sMap = new Map<string,number>()
+      
+      if ( Number(Submit.score1Submit) !== 0){
+        sMap.set('score1Submit',0)
+      }
+      if ( Number(Submit.score2Submit) !== 0){
+        sMap.set('score2Submit',0)
+      }
+      if ( Number(Submit.score3Submit) !== 0){
+        sMap.set('score3Submit',0)
+      }
+  
+      let m = Math.floor(token / sMap.size)
+      let n = token % sMap.size
+      for (let item of Array.from(sMap)){
+        let num = m
+        if(n !== 0){
+          num = num +1
+          n = n-1
+        }
+  
+        sMap.set(item[0], num);
+      }
+      // setForm((obj) => ({
+      //   ...obj,
+      //   score1Submit: Submit.score1Submit + sMap.get('score1Submit'),
+      //   score2Submit: Submit.score2Submit + sMap.get('score2Submit'),
+      //   score3Submit: Submit.score3Submit + sMap.get('score3Submit'),
+      // }));
+    
+
+
+
+
       postTest();
     }
     return () => clearInterval(id);
